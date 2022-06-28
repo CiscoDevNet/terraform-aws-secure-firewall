@@ -9,11 +9,8 @@ import (
 func TestExamplesBasic(t *testing.T) {
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../examples/basic",
-		// Vars: map[string]interface{}{
-		// 	"myvar":     "test",
-		// 	"mylistvar": []string{"list_item_1"},
-		// },
+		TerraformDir: "../examples/centralized_architecture",
+		VarFiles:     []string{"terraform.tfvars"},
 	}
 
 	defer terraform.Destroy(t, terraformOptions)

@@ -18,15 +18,6 @@ module "service_network" {
   inside_subnet_name  = var.inside_subnet_name
 }
 
-module "spoke_network" {
-  source              = "../../../../terraform-modules/network"
-  vpc_cidr            = var.spoke_vpc_cidr
-  vpc_name            = var.spoke_vpc_name
-  create_igw          = var.spoke_create_igw
-  mgmt_subnet_cidr    = var.spoke_subnet_cidr
-  mgmt_subnet_name    = var.spoke_subnet_name
-}
-
 module "instance" {
   source                  = "../../../../terraform-modules/firewallserver"
   keyname                 = var.keyname
@@ -66,21 +57,5 @@ module "gwlbe" {
   ngw_id                  = module.nat_gw.ngw
   gwlb                    = module.gwlb.gwlb
   availability_zone_count = var.availability_zone_count
-}
-
-module "transitgateway" {
-  source                      = "../../../../terraform-modules/transitgateway"
-  vpc_service_id              = module.service_network.vpc_id
-  vpc_spoke_id                = module.spoke_network.vpc_id
-  tgw_subnet_cidr             = var.tgw_subnet_cidr
-  tgw_subnet_name             = var.tgw_subnet_name
-  vpc_spoke_cidr              = var.spoke_vpc_cidr
-  spoke_subnet_id             = module.spoke_network.mgmt_subnet
-  spoke_rt_id                 = module.spoke_network.mgmt_rt_id[0]
-  gwlbe                       = module.gwlbe.gwlb_endpoint_id
-  transit_gateway_name        = var.transit_gateway_name
-  aws_availability_zones      = var.availability_zone_count
-  NAT_Subnet_Routetable_IDs   = module.nat_gw.nat_rt_id
-  GWLBE_Subnet_Routetable_IDs = module.gwlbe.gwlbe_rt_id
 }
 

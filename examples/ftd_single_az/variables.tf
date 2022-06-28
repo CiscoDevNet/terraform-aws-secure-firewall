@@ -5,28 +5,18 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "service_vpc_cidr" {
+variable "vpc_cidr" {
   default = null
 }
 
-variable "service_vpc_name" {
+variable "vpc_name" {
   type    = string
   default = null
 }
 
-variable "service_create_igw" {
+variable "create_igw" {
   type    = bool
   default = false
-}
-
-variable "service_subnet_cidr" {
-    type    = list(string)
-  default = []
-}
-
-variable "subnet_service_name" {
-  type    = list(string)
-  default = []
 }
 
 variable "mgmt_subnet_cidr" {
@@ -61,13 +51,8 @@ variable "fmc_ip" {
   default = ""
 }
 
-variable "tgw_subnet_cidr" {
-  type    = list(string)
-  default = []
-}
-
 variable "availability_zone_count" {
-  default = 2
+  default = 1
 }
 
 variable "mgmt_subnet_name" {
@@ -81,11 +66,6 @@ variable "outside_subnet_name" {
 }
 
 variable "diag_subnet_name" {
-  type    = list(string)
-  default = []
-}
-
-variable "tgw_subnet_name" {
   type    = list(string)
   default = []
 }
@@ -152,54 +132,6 @@ variable "instances_per_az" {
 }
 
 ########################################################################
-## Spoke  
-########################################################################
-
-variable "spoke_vpc_cidr" {
-  default = null
-}
-
-variable "spoke_vpc_name" {
-  type    = string
-  default = null
-}
-
-variable "spoke_create_igw" {
-  type    = string
-  default = true
-}
-
-variable "spoke_subnet_cidr" {
-  type    = list(string)
-  default = []
-}
-
-variable "spoke_subnet_name" {
-  type    = list(string)
-  default = []
-}
-
-variable "gwlbe_subnet_cidr" {
-  type    = list(string)
-  default = []
-}
-
-variable "gwlbe_subnet_name" {
-  type    = list(string)
-  default = []
-}
-
-variable "ngw_subnet_cidr" {
-  type    = list(string)
-  default = []
-}
-
-variable "ngw_subnet_name" {
-  type    = list(string)
-  default = []
-}
-
-########################################################################
 ## Instances
 ########################################################################
 
@@ -208,33 +140,6 @@ variable "ftd_size" {
 }
 
 variable "keyname" {}
-
-########################################################################
-## GatewayLoadbalncer 
-########################################################################
-
-variable "GWLB_name" {
-  type    = string
-  description = "name for Gateway loadbalancer"
- }
-
-variable "aws_availability_zones" {
-  type    = list(string)
-  description = "list of availability_zones"
-  default = []
-}
-
-variable "instance_ip" {
-  type    = list(string)
-  description = "list of instance ip address that will be attached to target group of GWLB"
-  default =  []
-}
-
-variable "transit_gateway_name" {
-  type = string
-  description = "Name of the Transit Gateway created"
-  default = null
-}
 
 variable "inside_subnet_cidr" {
   type    = list(string)
@@ -266,14 +171,8 @@ variable "inside_interface_sg" {
   }]
 }
 
-variable "use_ftd_eip" {
-  description = "boolean value to use EIP on FTD or not"
+variable "create_fmc" {
+  description = "Boolean value to create FMC or not"
   type = bool
-  default = false
-}
-
-variable "use_fmc_eip" {
-  description = "boolean value to use EIP on FMC or not"
-  type = bool
-  default = false
+  default = true
 }

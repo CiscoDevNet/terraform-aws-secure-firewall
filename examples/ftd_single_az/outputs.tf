@@ -1,6 +1,6 @@
  
 output "service_mgmt_subnets" {
-  value = module.service_network.mgmt_subnet
+  value = module.network.mgmt_subnet
    
 }
 

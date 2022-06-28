@@ -61,11 +61,6 @@ variable "fmc_ip" {
   default = ""
 }
 
-variable "tgw_subnet_cidr" {
-  type    = list(string)
-  default = []
-}
-
 variable "availability_zone_count" {
   default = 2
 }
@@ -81,11 +76,6 @@ variable "outside_subnet_name" {
 }
 
 variable "diag_subnet_name" {
-  type    = list(string)
-  default = []
-}
-
-variable "tgw_subnet_name" {
   type    = list(string)
   default = []
 }
@@ -151,34 +141,6 @@ variable "instances_per_az" {
   default = 1
 }
 
-########################################################################
-## Spoke  
-########################################################################
-
-variable "spoke_vpc_cidr" {
-  default = null
-}
-
-variable "spoke_vpc_name" {
-  type    = string
-  default = null
-}
-
-variable "spoke_create_igw" {
-  type    = string
-  default = true
-}
-
-variable "spoke_subnet_cidr" {
-  type    = list(string)
-  default = []
-}
-
-variable "spoke_subnet_name" {
-  type    = list(string)
-  default = []
-}
-
 variable "gwlbe_subnet_cidr" {
   type    = list(string)
   default = []
@@ -230,12 +192,6 @@ variable "instance_ip" {
   default =  []
 }
 
-variable "transit_gateway_name" {
-  type = string
-  description = "Name of the Transit Gateway created"
-  default = null
-}
-
 variable "inside_subnet_cidr" {
   type    = list(string)
   default = []
@@ -264,16 +220,4 @@ variable "inside_interface_sg" {
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }]
-}
-
-variable "use_ftd_eip" {
-  description = "boolean value to use EIP on FTD or not"
-  type = bool
-  default = false
-}
-
-variable "use_fmc_eip" {
-  description = "boolean value to use EIP on FMC or not"
-  type = bool
-  default = false
 }
