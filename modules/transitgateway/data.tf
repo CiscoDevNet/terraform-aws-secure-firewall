@@ -1,0 +1,6 @@
+data "aws_availability_zones" "available" {}
+
+data "aws_route_table" "spoke_rt" {
+  count          = length(var.spoke_rt_id)
+  route_table_id = var.spoke_rt_id[count.index]
+}

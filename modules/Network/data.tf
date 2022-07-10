@@ -1,7 +1,7 @@
 data "aws_availability_zones" "available" {}
 
 data "aws_subnet" "mgmt" {
-  count = var.mgmt_subnet_cidr == [] ? length(var.mgmt_subnet_name) : 0
+  count = length(var.mgmt_subnet_cidr) == 0 ? length(var.mgmt_subnet_name) : 0
   filter {
     name   = "tag:Name"
     values = [var.mgmt_subnet_name[count.index]]
@@ -9,7 +9,7 @@ data "aws_subnet" "mgmt" {
 }
 
 data "aws_subnet" "outsideftd" {
-  count = var.outside_subnet_cidr == [] ? length(var.outside_subnet_name) : 0
+  count = length(var.outside_subnet_cidr) == 0 ? length(var.outside_subnet_name) : 0
   filter {
     name   = "tag:Name"
     values = [var.outside_subnet_name[count.index]]
@@ -17,7 +17,7 @@ data "aws_subnet" "outsideftd" {
 }
 
 data "aws_subnet" "insideftd" {
-  count = var.inside_subnet_cidr == [] ? length(var.inside_subnet_name) : 0
+  count = length(var.inside_subnet_cidr) == 0 ? length(var.inside_subnet_name) : 0
   filter {
     name   = "tag:Name"
     values = [var.inside_subnet_name[count.index]]
@@ -25,14 +25,14 @@ data "aws_subnet" "insideftd" {
 }
 
 data "aws_subnet" "diagftd" {
-  count = var.diag_subnet_cidr == [] ? length(var.diag_subnet_name) : 0
+  count = length(var.diag_subnet_cidr) == 0 ? length(var.diag_subnet_name) : 0
   filter {
     name   = "tag:Name"
     values = [var.diag_subnet_name[count.index]]
   }
 }
 
-data "aws_vpc" "asa_vpc" {
+data "aws_vpc" "ftd_vpc" {
   count = var.vpc_cidr == "" ? 1 : 0
   filter {
     name   = "tag:Name"
@@ -41,7 +41,7 @@ data "aws_vpc" "asa_vpc" {
 }
 
 data "aws_internet_gateway" "default" {
-  count = var.create_igw ? 0 : 1
+  count = var.create_igw ? 0 : var.igw_name == "" ? 0 : 1
   filter {
     name   = "attachment.vpc-id"
     values = [local.con]

@@ -1,56 +1,65 @@
 
-variable "vpc_service_id" {}
-variable "vpc_spoke_id" {}
-variable "spoke_subnet_id" {}
+variable "vpc_service_id" {
+  type        = string
+  description = "ID of the service VPC"
+}
+variable "vpc_spoke_id" {
+  type        = string
+  description = "ID of the Spoke VPC"
+}
+variable "spoke_subnet_id" {
+  type        = list(any)
+  description = "ID of the Spoke Subnet"
+}
 
-variable "tgw_subnet_name" {}
+variable "tgw_subnet_name" {
+  type        = list(string)
+  description = "List of name for TGW Subnets"
+  default     = []
+}
 
-variable "tgw_subnet_cidr" {}
+variable "tgw_subnet_cidr" {
+  description = "Transit Gateway subnet CIDR"
+  type        = list(string)
+  default     = []
+}
 
-variable "vpc_spoke_cidr" {}
+variable "vpc_spoke_cidr" {
+  description = "Spoke VPC Subnet CIDR"
+  type        = string
+}
 
 variable "availability_zone_count" {
-  default = 2
+  description = "Number of AZ to be used for deployment"
+  type        = number
+  default     = 2
 }
 
 variable "gwlbe" {
-  type = list(string)
+  type        = list(string)
   description = "ID of the GWLB Endpoints"
 }
 
 variable "transit_gateway_name" {
-  type = string
+  type        = string
   description = "Name of the Transit Gateway created"
-  default = null
+  default     = null
 }
 
-variable "aws_availability_zones" {
-  type = number
-  default = 2
-}
-
-variable "NAT_Subnet_Routetable_IDs" {
-  type = list(string)
+variable "nat_subnet_routetable_ids" {
+  type        = list(string)
   description = "list of Route table IDs associated with NAT Subnets"
-  default = []
+  default     = []
 }
 
-variable "GWLBE_Subnet_Routetable_IDs" {
-  type = list(string)
+variable "gwlbe_subnet_routetable_ids" {
+  type        = list(string)
   description = "list of Route table IDs associated with GWLBE Subnets"
-  default = []
-}
-variable "service_subnet_cidr" {
-  type = list(string)
-  description = "CIDRs of the service TGW Subnet"
-  default = []
+  default     = []
 }
 
-variable "spoke_subnet_cidr" {
-  description = "CIDRs for new spoke TGW subnets"
-  type = list(string)
-  default = []
+variable "spoke_rt_id" {
+  type        = list(string)
+  description = "Spoke VPC Route table ID"
 }
-
-variable "spoke_rt_id" {}
   

@@ -1,5 +1,5 @@
 resource "aws_subnet" "gwlbe_subnet" {
-  count             = var.gwlbe_subnet_cidr != [] ? length(var.gwlbe_subnet_cidr) : 0
+  count             = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : 0
   vpc_id            = var.vpc_id
   cidr_block        = var.gwlbe_subnet_cidr[count.index]
   availability_zone = data.aws_availability_zones.available.names[count.index]
@@ -10,7 +10,7 @@ resource "aws_subnet" "gwlbe_subnet" {
 }
 
 resource "aws_route_table" "gwlbe_route" {
-  count  = var.gwlbe_subnet_cidr != [] ? length(var.gwlbe_subnet_cidr) : length(var.gwlbe_subnet_name)
+  count  = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : length(var.gwlbe_subnet_name)
   vpc_id = var.vpc_id
 
   route {
@@ -24,8 +24,8 @@ resource "aws_route_table" "gwlbe_route" {
 }
 
 resource "aws_route_table_association" "gwlbe_association" {
-  count          = var.gwlbe_subnet_cidr != [] ? length(var.gwlbe_subnet_cidr) : length(var.gwlbe_subnet_name)
-  subnet_id      = var.gwlbe_subnet_cidr != [] ? aws_subnet.gwlbe_subnet[count.index].id : data.aws_subnet.gwlbe[count.index].id
+  count          = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : length(var.gwlbe_subnet_name)
+  subnet_id      = length(var.gwlbe_subnet_cidr) != 0 ? aws_subnet.gwlbe_subnet[count.index].id : data.aws_subnet.gwlbe[count.index].id
   route_table_id = aws_route_table.gwlbe_route[count.index].id
 }
 

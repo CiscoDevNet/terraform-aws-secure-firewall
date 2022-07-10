@@ -1,59 +1,4 @@
 <!-- BEGIN_TF_DOCS -->
-# AWS GWLB Centralized Architecture with Transit Gateway setup
-
-## Overview
-
-Using this Terraform template, AWS Transit Gateway to connect VPCs will be created in AWS based on the user parameters, with the following components:
-
-- One TGW subnet per AZ in service VPC
-- One TGW subnet per AZ in spoke VPC or use existing subnets provider as input
-- Transit Gateway
-- Attachments for Transit Gateway to service and spoke vpc
-- Routing table attachment to each of these subnets
-- Routing rules for Transit Gateway
-- If NAT Subnet IDs and GWLBE Subnet associasted Route table IDs are provided,routes will be added to their route tables for centralized architecture traffic flow.
-
-*Appliance mode is enabled for service VPC Transit Gateway Attachment*
-
-## Topology
-
-![GWLB Centralized Architecture](./images/centralized\_architecture.png)
-
-## Prerequisites
-
-Make sure you have the following:
-
-- Terraform – Learn how to download and set up [here](https://learn.hashicorp.com/terraform/getting-started/install.html).
-- Programmatic access to AWS account with CLI - learn how to set up [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
-
-The template has been tested on :
-- Terraform = v1.0.11
-
-### Parameters
-
-The following variables should be defined with a value in the "terraform.tfvars" file before using the templates.
-*Please note, the value provided below and in .tfvars are just examples. Please change it based on your requirements.*
-
-| Parameter | Meaning | Required |
-| --- | --- | --- |
-| `aws_access_key` | Access key ID | Y |
-| `aws_secret_key` | Secret access key | Y |
-| `region` | AWS Region | Y |
-| `vpc_service_id` | Existing Service VPC ID | Y |
-| `vpc_spoke_id` | Existing Spoke VPC ID | Y |
-| `subnet_spoke_namE` | Name of the spoke TGW subnet being created | N |
-| `subnet_service_name` | Name of the service TGW subnet being created | N |
-| `cidr_spoke_sub ` | CIDRs for new spoke TGW subnets | N|
-| `id_spoke_sub` | IDs for existing spoke subnets | N |
-| `cidr_service_sub`| CIDRs of the service TGW Subnet | Y |
-| `gwlbe` | Gateway load balancer endpoint IDs | Y |
-| `transit_gateway_name` | Transit Gateway Name | N |
-| `aws_availability_zones` | List of AZs to distribute service subnets | Y |
-| `NAT_Subnet_Routetable_IDs` | list of Route table IDs associated with NAT Subnets | N |
-| `GWLBE_Subnet_Routetable_IDs` | list of Route table IDs associated with GWLBE Subnets | N |
-
-* will need to add route to spoke subnet in the NAT GATEWAT and GWLBE subnets
-
 ## Requirements
 
 | Name | Version |
@@ -69,13 +14,13 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_gwlb"></a> [gwlb](#module\_gwlb) | ./modules/gwlb | n/a |
-| <a name="module_gwlbe"></a> [gwlbe](#module\_gwlbe) | ./modules/gwlbe | n/a |
-| <a name="module_instance"></a> [instance](#module\_instance) | ./modules/firewallserver | n/a |
-| <a name="module_nat_gw"></a> [nat\_gw](#module\_nat\_gw) | ./modules/nat_gw | n/a |
-| <a name="module_service_network"></a> [service\_network](#module\_service\_network) | ./modules/network | n/a |
-| <a name="module_spoke_network"></a> [spoke\_network](#module\_spoke\_network) | ./modules/network | n/a |
-| <a name="module_transitgateway"></a> [transitgateway](#module\_transitgateway) | ./modules/transitgateway | n/a |
+| <a name="module_gwlb"></a> [gwlb](#module\_gwlb) | ../../modules/gwlb | n/a |
+| <a name="module_gwlbe"></a> [gwlbe](#module\_gwlbe) | ../../modules/gwlbe | n/a |
+| <a name="module_instance"></a> [instance](#module\_instance) | ../../modules/firewallserver | n/a |
+| <a name="module_nat_gw"></a> [nat\_gw](#module\_nat\_gw) | ../../modules/nat_gw | n/a |
+| <a name="module_service_network"></a> [service\_network](#module\_service\_network) | ../../modules/network | n/a |
+| <a name="module_spoke_network"></a> [spoke\_network](#module\_spoke\_network) | ../../modules/network | n/a |
+| <a name="module_transitgateway"></a> [transitgateway](#module\_transitgateway) | ../../modules/transitgateway | n/a |
 
 ## Resources
 

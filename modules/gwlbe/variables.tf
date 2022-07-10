@@ -1,19 +1,26 @@
 variable "gwlbe_subnet_cidr" {
-  type    = list(string)
-  default = []
+  description = "GWLB-Endpoint subnet CIDR"
+  type        = list(string)
+  default     = []
 }
 
 variable "gwlbe_subnet_name" {
-  type    = list(string)
-  default = []
+  description = "GWLB-Endpoint subnet name"
+  type        = list(string)
+  default     = []
 }
 
-variable "vpc_id" {}
+variable "vpc_id" {
+  type        = string
+  description = "ID of the service VPC"
+}
 
-variable "ngw_id" {}
+variable "ngw_id" {
+  type        = list(string)
+  description = "NAT GW Subnet ID"
+}
 
-variable "gwlb" {}
-
-variable "availability_zone_count" {
-  default = 2
+variable "gwlb" {
+  type        = list(string)
+  description = "Gateway Loadbalancer arn"
 }

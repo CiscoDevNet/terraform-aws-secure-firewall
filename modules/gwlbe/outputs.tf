@@ -1,5 +1,6 @@
 output "gwlbe_rt_id" {
-  value = aws_route_table.gwlbe_route.*.id
+  description = "Gateway loadbalancer Endpoint subnet route table ID"
+  value       = aws_route_table.gwlbe_route.*.id
 }
 
 output "gwlb_endpoint_id" {

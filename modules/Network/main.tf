@@ -1,4 +1,4 @@
-resource "aws_vpc" "asa_vpc" {
+resource "aws_vpc" "ftd_vpc" {
   count                = var.vpc_cidr != "" ? 1 : 0
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
@@ -11,17 +11,18 @@ resource "aws_vpc" "asa_vpc" {
 }
 
 resource "aws_subnet" "mgmt_subnet" {
-  count             = var.mgmt_subnet_cidr != [] ? length(var.mgmt_subnet_cidr) : 0
-  vpc_id            = local.con
-  cidr_block        = var.mgmt_subnet_cidr[count.index]
-  availability_zone = data.aws_availability_zones.available.names[count.index]
+  count                   = length(var.mgmt_subnet_cidr) != 0 ? length(var.mgmt_subnet_cidr) : 0
+  vpc_id                  = local.con
+  cidr_block              = var.mgmt_subnet_cidr[count.index]
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = true
   tags = merge({
     Name = "${var.mgmt_subnet_name[count.index]}"
   }, var.tags)
 }
 
 resource "aws_subnet" "outside_subnet" {
-  count             = var.outside_subnet_cidr != [] ? length(var.outside_subnet_cidr) : 0
+  count             = length(var.outside_subnet_cidr) != 0 ? length(var.outside_subnet_cidr) : 0
   vpc_id            = local.con
   cidr_block        = var.outside_subnet_cidr[count.index]
   availability_zone = data.aws_availability_zones.available.names[count.index]
@@ -32,7 +33,7 @@ resource "aws_subnet" "outside_subnet" {
 }
 
 resource "aws_subnet" "inside_subnet" {
-  count             = var.inside_subnet_cidr != [] ? length(var.inside_subnet_cidr) : 0
+  count             = length(var.inside_subnet_cidr) != 0 ? length(var.inside_subnet_cidr) : 0
   vpc_id            = local.con
   cidr_block        = var.inside_subnet_cidr[count.index]
   availability_zone = data.aws_availability_zones.available.names[count.index]
@@ -43,7 +44,7 @@ resource "aws_subnet" "inside_subnet" {
 }
 
 resource "aws_subnet" "diag_subnet" {
-  count             = var.diag_subnet_cidr != [] ? length(var.diag_subnet_cidr) : 0
+  count             = length(var.diag_subnet_cidr) != 0 ? length(var.diag_subnet_cidr) : 0
   vpc_id            = local.con
   cidr_block        = var.diag_subnet_cidr[count.index]
   availability_zone = data.aws_availability_zones.available.names[count.index]
@@ -60,98 +61,127 @@ resource "aws_subnet" "diag_subnet" {
 resource "aws_security_group" "outside_sg" {
   name        = "Outside Interface SG"
   vpc_id      = local.con
+  description = "Secure Firewall Outside SG"
+}
 
-  dynamic "ingress" {
-    for_each = var.outside_interface_sg
-    content {
-      from_port   = lookup(ingress.value, "from_port", null)
-      to_port     = lookup(ingress.value, "to_port", null)
-      protocol    = lookup(ingress.value, "protocol", null)
-      cidr_blocks = lookup(ingress.value, "cidr_blocks", null)
-      description = lookup(ingress.value, "description", null)
-    }
-  }
+# tfsec:ignore:aws-vpc-add-description-to-security-group-rule
+# tfsec:ignore:aws-vpc-no-public-ingress-sgr
+resource "aws_security_group_rule" "outside_sg_ingress" {
+  count       = length(var.outside_interface_sg)
+  type        = "ingress"
+  from_port   = lookup(var.outside_interface_sg[count.index], "from_port", null)
+  to_port     = lookup(var.outside_interface_sg[count.index], "to_port", null)
+  protocol    = lookup(var.outside_interface_sg[count.index], "protocol", null)
+  cidr_blocks = lookup(var.outside_interface_sg[count.index], "cidr_blocks", null)
+  #description = var.outside_interface_sg[count.index].description
+  security_group_id = aws_security_group.outside_sg.id
+}
 
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+# tfsec:ignore:aws-vpc-no-public-egress-sgr
+resource "aws_security_group_rule" "outside_sg_egress" {
+  type              = "egress"
+  description       = "Secure Firewall Outside SG"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.outside_sg.id
 }
 
 resource "aws_security_group" "inside_sg" {
   name        = "Inside Interface SG"
   vpc_id      = local.con
+  description = "Secure Firewall Inside SG"
+}
 
-  dynamic "ingress" {
-    for_each = var.inside_interface_sg
-    content {
-      from_port   = lookup(ingress.value, "from_port", null)
-      to_port     = lookup(ingress.value, "to_port", null)
-      protocol    = lookup(ingress.value, "protocol", null)
-      cidr_blocks = lookup(ingress.value, "cidr_blocks", null)
-      description = lookup(ingress.value, "description", null)
-    }
-  }
+# tfsec:ignore:aws-vpc-add-description-to-security-group-rule
+# tfsec:ignore:aws-vpc-no-public-ingress-sgr
+resource "aws_security_group_rule" "inside_sg_ingress" {
+  count       = length(var.inside_interface_sg)
+  type        = "ingress"
+  from_port   = lookup(var.inside_interface_sg[count.index], "from_port", null)
+  to_port     = lookup(var.inside_interface_sg[count.index], "to_port", null)
+  protocol    = lookup(var.inside_interface_sg[count.index], "protocol", null)
+  cidr_blocks = lookup(var.inside_interface_sg[count.index], "cidr_blocks", null)
+  #description = var.outside_interface_sg[count.index].description
+  security_group_id = aws_security_group.inside_sg.id
+}
 
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+# tfsec:ignore:aws-vpc-no-public-egress-sgr
+resource "aws_security_group_rule" "inside_sg_egress" {
+  type              = "egress"
+  description       = "Secure Firewall Inside SG"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.inside_sg.id
 }
 
 resource "aws_security_group" "mgmt_sg" {
   name        = "FTD Management Interface SG"
   vpc_id      = local.con
+  description = "Secure Firewall MGMT SG"
+}
 
-  dynamic "ingress" {
-    for_each = var.mgmt_interface_sg
-    content {
-      from_port   = lookup(ingress.value, "from_port", null)
-      to_port     = lookup(ingress.value, "to_port", null)
-      protocol    = lookup(ingress.value, "protocol", null)
-      cidr_blocks = lookup(ingress.value, "cidr_blocks", null)
-      description = lookup(ingress.value, "description", null)
-    }
-  }
+# tfsec:ignore:aws-vpc-add-description-to-security-group-rule
+# tfsec:ignore:aws-vpc-no-public-ingress-sgr
+resource "aws_security_group_rule" "mgmt_sg_ingress" {
+  count       = length(var.mgmt_interface_sg)
+  type        = "ingress"
+  from_port   = lookup(var.mgmt_interface_sg[count.index], "from_port", null)
+  to_port     = lookup(var.mgmt_interface_sg[count.index], "to_port", null)
+  protocol    = lookup(var.mgmt_interface_sg[count.index], "protocol", null)
+  cidr_blocks = lookup(var.mgmt_interface_sg[count.index], "cidr_blocks", null)
+  #description = var.outside_interface_sg[count.index].description
+  security_group_id = aws_security_group.mgmt_sg.id
+}
 
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+# tfsec:ignore:aws-vpc-no-public-egress-sgr
+resource "aws_security_group_rule" "mgmt_sg_egress" {
+  type              = "egress"
+  description       = "Secure Firewall MGMT SG"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.mgmt_sg.id
 }
 
 resource "aws_security_group" "fmc_mgmt_sg" {
   name        = "FMC Management Interface SG"
   vpc_id      = local.con
+  description = "Secure Firewall FMC MGMT SG"
+}
 
-  dynamic "ingress" {
-    for_each = var.fmc_mgmt_interface_sg
-    content {
-      from_port   = lookup(ingress.value, "from_port", null)
-      to_port     = lookup(ingress.value, "to_port", null)
-      protocol    = lookup(ingress.value, "protocol", null)
-      cidr_blocks = lookup(ingress.value, "cidr_blocks", null)
-      description = lookup(ingress.value, "description", null)
-    }
-  }
+# tfsec:ignore:aws-vpc-add-description-to-security-group-rule
+# tfsec:ignore:aws-vpc-no-public-ingress-sgr
+resource "aws_security_group_rule" "fmc_mgmt_sg_ingress" {
+  count       = length(var.fmc_mgmt_interface_sg)
+  type        = "ingress"
+  from_port   = lookup(var.fmc_mgmt_interface_sg[count.index], "from_port", null)
+  to_port     = lookup(var.fmc_mgmt_interface_sg[count.index], "to_port", null)
+  protocol    = lookup(var.fmc_mgmt_interface_sg[count.index], "protocol", null)
+  cidr_blocks = lookup(var.fmc_mgmt_interface_sg[count.index], "cidr_blocks", null)
+  #description = var.outside_interface_sg[count.index].description
+  security_group_id = aws_security_group.fmc_mgmt_sg.id
+}
 
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+# tfsec:ignore:aws-vpc-no-public-egress-sgr
+resource "aws_security_group_rule" "fmc_mgmt_sg_egress" {
+  type              = "egress"
+  description       = "Secure Firewall FMC MGMT SG"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.fmc_mgmt_sg.id
 }
 
 resource "aws_security_group" "no_access" {
   name        = "No Access"
   vpc_id      = local.con
+  description = "No Access SG"
 }
 
 # # ##################################################################################################################################
@@ -216,7 +246,7 @@ resource "aws_internet_gateway" "int_gw" {
 }
 
 resource "aws_route_table" "ftd_mgmt_route" {
-  count  = var.mgmt_subnet_cidr != [] ? length(var.mgmt_subnet_cidr) : length(var.mgmt_subnet_name)
+  count  = var.create_igw ? (var.mgmt_subnet_cidr != [] ? length(var.mgmt_subnet_cidr) : length(var.mgmt_subnet_name)) : 0
   vpc_id = local.con
   route {
     cidr_block = "0.0.0.0/0"
@@ -229,7 +259,7 @@ resource "aws_route_table" "ftd_mgmt_route" {
 }
 
 resource "aws_route_table" "ftd_outside_route" {
-  count  = var.outside_subnet_cidr != [] ? length(var.outside_subnet_cidr) : length(var.outside_subnet_name)
+  count  = length(var.outside_subnet_cidr) != 0 ? length(var.outside_subnet_cidr) : length(var.outside_subnet_name)
   vpc_id = local.con
   tags = merge({
     Name = "outside network Routing table"
@@ -237,7 +267,7 @@ resource "aws_route_table" "ftd_outside_route" {
 }
 
 resource "aws_route_table" "ftd_inside_route" {
-  count  = var.inside_subnet_cidr != [] ? length(var.inside_subnet_cidr) : length(var.inside_subnet_name)
+  count  = length(var.inside_subnet_cidr) != 0 ? length(var.inside_subnet_cidr) : length(var.inside_subnet_name)
   vpc_id = local.con
   tags = merge({
     Name = "inside network Routing table"
@@ -245,7 +275,7 @@ resource "aws_route_table" "ftd_inside_route" {
 }
 
 resource "aws_route_table" "ftd_diag_route" {
-  count  = var.diag_subnet_cidr != [] ? length(var.diag_subnet_cidr) : length(var.diag_subnet_name)
+  count  = length(var.diag_subnet_cidr) != 0 ? length(var.diag_subnet_cidr) : length(var.diag_subnet_name)
   vpc_id = local.con
   tags = merge({
     Name = "diag network Routing table"
@@ -253,26 +283,26 @@ resource "aws_route_table" "ftd_diag_route" {
 }
 
 resource "aws_route_table_association" "outside_association" {
-  count          = var.outside_subnet_cidr != [] ? length(var.outside_subnet_cidr) : length(var.outside_subnet_name)
-  subnet_id      = var.outside_subnet_cidr != [] ? aws_subnet.outside_subnet[count.index].id : data.aws_subnet.outsideftd[count.index].id
+  count          = length(var.outside_subnet_cidr) != 0 ? length(var.outside_subnet_cidr) : length(var.outside_subnet_name)
+  subnet_id      = length(var.outside_subnet_cidr) != 0 ? aws_subnet.outside_subnet[count.index].id : data.aws_subnet.outsideftd[count.index].id
   route_table_id = aws_route_table.ftd_outside_route[count.index].id
 }
 
 resource "aws_route_table_association" "mgmt_association" {
-  count          = var.mgmt_subnet_cidr != [] ? length(var.mgmt_subnet_cidr) : length(var.mgmt_subnet_name)
-  subnet_id      = var.mgmt_subnet_cidr != [] ? aws_subnet.mgmt_subnet[count.index].id : data.aws_subnet.mgmt[count.index].id
+  count          = var.create_igw ? (var.mgmt_subnet_cidr != [] ? length(var.mgmt_subnet_cidr) : length(var.mgmt_subnet_name)) : 0
+  subnet_id      = length(var.mgmt_subnet_cidr) != 0 ? aws_subnet.mgmt_subnet[count.index].id : data.aws_subnet.mgmt[count.index].id
   route_table_id = aws_route_table.ftd_mgmt_route[count.index].id
 }
 
 resource "aws_route_table_association" "inside_association" {
-  count          = var.inside_subnet_cidr != [] ? length(var.inside_subnet_cidr) : length(var.inside_subnet_name)
-  subnet_id      = var.inside_subnet_cidr != [] ? aws_subnet.inside_subnet[count.index].id : data.aws_subnet.insideftd[count.index].id
+  count          = length(var.inside_subnet_cidr) != 0 ? length(var.inside_subnet_cidr) : length(var.inside_subnet_name)
+  subnet_id      = length(var.inside_subnet_cidr) != 0 ? aws_subnet.inside_subnet[count.index].id : data.aws_subnet.insideftd[count.index].id
   route_table_id = aws_route_table.ftd_inside_route[count.index].id
 }
 
 resource "aws_route_table_association" "diag_association" {
-  count          = var.diag_subnet_cidr != [] ? length(var.diag_subnet_cidr) : length(var.diag_subnet_name)
-  subnet_id      = var.diag_subnet_cidr != [] ? aws_subnet.diag_subnet[count.index].id : data.aws_subnet.diagftd[count.index].id
+  count          = length(var.diag_subnet_cidr) != 0 ? length(var.diag_subnet_cidr) : length(var.diag_subnet_name)
+  subnet_id      = length(var.diag_subnet_cidr) != 0 ? aws_subnet.diag_subnet[count.index].id : data.aws_subnet.diagftd[count.index].id
   route_table_id = aws_route_table.ftd_diag_route[count.index].id
 }
 
@@ -280,7 +310,7 @@ resource "aws_route_table_association" "diag_association" {
 # # # AWS External IP address creation and associating it to the mgmt interface. 
 # # ##################################################################################################################################
 
-resource "aws_eip" "ftd_mgmt-EIP" {
+resource "aws_eip" "ftd_mgmt_eip" {
   count = var.use_ftd_eip ? (length(var.mgmt_interface) != 0 ? length(var.mgmt_interface) : length(var.ftd_mgmt_ip)) : 0
   vpc   = true
   tags = merge({
@@ -288,21 +318,21 @@ resource "aws_eip" "ftd_mgmt-EIP" {
   }, var.tags)
 }
 
-resource "aws_eip_association" "ftd-mgmt-ip-assocation" {
-  count                = length(aws_eip.ftd_mgmt-EIP)
+resource "aws_eip_association" "ftd_mgmt_ip_assocation" {
+  count                = length(aws_eip.ftd_mgmt_eip)
   network_interface_id = length(var.mgmt_interface) != 0 ? var.mgmt_interface[count.index] : aws_network_interface.ftd_mgmt[count.index].id
-  allocation_id        = aws_eip.ftd_mgmt-EIP[count.index].id
+  allocation_id        = aws_eip.ftd_mgmt_eip[count.index].id
 }
 
-resource "aws_eip" "fmcmgmt-EIP" {
+resource "aws_eip" "fmcmgmt_eip" {
   count = var.use_fmc_eip ? 1 : 0
   vpc   = true
   tags = {
     "Name" = "FMCv Management IP"
   }
 }
-resource "aws_eip_association" "fmc-mgmt-ip-assocation" {
+resource "aws_eip_association" "fmc_mgmt_ip_assocation" {
   count                = var.use_fmc_eip ? 1 : 0
   network_interface_id = aws_network_interface.fmcmgmt[0].id
-  allocation_id        = aws_eip.fmcmgmt-EIP[0].id
+  allocation_id        = aws_eip.fmcmgmt_eip[0].id
 }
