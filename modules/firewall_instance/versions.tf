@@ -1,0 +1,10 @@
+terraform {
+  required_providers {
+    aws = {
+      version = ">= 2.7.0"
+      source  = "hashicorp/aws"
+    }
+    template = ">= 2.2.0"
+  }
+  required_version = ">= 0.13.5"
+}
