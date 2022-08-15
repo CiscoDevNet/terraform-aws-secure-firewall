@@ -1,0 +1,20 @@
+# mac specific
+.DS_Store
+.ansible
+# .ssh dir may contain private keys
+.ssh
+*.pem
+.pem
+# Terraform dot files
+.terraform
+.terraform.lock.hcl
+.terraformrc
+**/.terraform/*
+.terraform.d
+*.tfstate
+*.tfstate.*
+.terragrunt-cache
+.vscode
+.idea
+# variable files
+terraform.tfvars

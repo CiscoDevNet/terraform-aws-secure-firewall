@@ -1,5 +1,5 @@
 module "service_network" {
-  source                = "./modules/network"
+  source                = "../../modules/network"
   vpc_cidr              = var.service_vpc_cidr
   vpc_name              = var.service_vpc_name
   create_igw            = var.service_create_igw
@@ -25,7 +25,7 @@ module "service_network" {
 }
 
 module "spoke_network" {
-  source           = "./modules/network"
+  source           = "../../modules/network"
   vpc_cidr         = var.spoke_vpc_cidr
   vpc_name         = var.spoke_vpc_name
   create_igw       = var.spoke_create_igw
@@ -34,7 +34,7 @@ module "spoke_network" {
 }
 
 module "instance" {
-  source                  = "./modules/firewallserver"
+  source                  = "../../modules/firewall_instance"
   keyname                 = var.keyname
   ftd_size                = var.ftd_size
   instances_per_az        = var.instances_per_az
@@ -48,7 +48,7 @@ module "instance" {
 }
 
 module "nat_gw" {
-  source                  = "./modules/nat_gw"
+  source                  = "../../modules/nat_gw"
   ngw_subnet_cidr         = var.ngw_subnet_cidr
   ngw_subnet_name         = var.ngw_subnet_name
   availability_zone_count = var.availability_zone_count
@@ -56,7 +56,7 @@ module "nat_gw" {
 }
 
 module "gwlb" {
-  source      = "./modules/gwlb"
+  source      = "../../modules/gwlb"
   gwlb_name   = var.gwlb_name
   gwlb_subnet = module.service_network.outside_subnet
   gwlb_vpc_id = module.service_network.vpc_id
@@ -64,7 +64,7 @@ module "gwlb" {
 }
 
 module "gwlbe" {
-  source            = "./modules/gwlbe"
+  source            = "../../modules/gwlbe"
   gwlbe_subnet_cidr = var.gwlbe_subnet_cidr
   gwlbe_subnet_name = var.gwlbe_subnet_name
   vpc_id            = module.service_network.vpc_id
@@ -73,7 +73,7 @@ module "gwlbe" {
 }
 
 module "transitgateway" {
-  source                      = "./modules/transitgateway"
+  source                      = "../../modules/transitgateway"
   vpc_service_id              = module.service_network.vpc_id
   vpc_spoke_id                = module.spoke_network.vpc_id
   tgw_subnet_cidr             = var.tgw_subnet_cidr

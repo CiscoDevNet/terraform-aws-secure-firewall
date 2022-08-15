@@ -3,7 +3,7 @@ variable "ftd_version" {
   type        = string
   default     = "ftdv-7.1.0"
   validation {
-    error_message = "Version name should include ftdv- followed by version. Example: ftdv-7.1.0"
+    error_message = "Version name should include ftdv- followed by version. Example: ftdv-7.1.0."
     condition     = can(regex("^ftdv-.*", var.ftd_version))
   }
 }
@@ -19,7 +19,7 @@ variable "fmc_version" {
   type        = string
   default     = "fmcv-7.1.0"
   validation {
-    error_message = "Version name should include fmcv- followed by version. Example: fmcv-7.1.0"
+    error_message = "Version name should include fmcv- followed by version. Example: fmcv-7.1.0."
     condition     = can(regex("^fmcv-.*", var.fmc_version))
   }
 }
