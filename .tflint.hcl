@@ -1,9 +1,6 @@
-# https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/module-inspection.md
-# borrowed & modified indefinitely from https://github.com/ksatirli/building-infrastructure-you-can-mostly-trust/blob/main/.tflint.hcl
-
 plugin "aws" {
   enabled = true
-  version = "0.14.0"
+  version = "0.16.0"
   source  = "github.com/terraform-linters/tflint-ruleset-aws"
 }
 
@@ -58,9 +55,5 @@ rule "terraform_module_pinned_source" {
 }
 
 rule "terraform_standard_module_structure" {
-  enabled = true
-}
-
-rule "terraform_workspace_remote" {
   enabled = true
 }
