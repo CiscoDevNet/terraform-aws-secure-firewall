@@ -6,11 +6,11 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-func TestExamplesBasic2(t *testing.T) {
+func TestExamplesBasic(t *testing.T) {
 	t.Parallel()
 
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/gwlb_centralized_architecture",
+		TerraformDir: "../examples/multi_instance_multi_az",
 		VarFiles:     []string{"terraform.tfvars"},
 	})
 

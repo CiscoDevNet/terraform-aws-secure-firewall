@@ -1,25 +1,14 @@
 <!-- BEGIN_TF_DOCS -->
-# AWS GWLB Centralized Architecture with Transit Gateway setup
+# Deployment of Cisco Secure FTDv and FMCv instances in AWS
 
 ## Overview
 
-Using this Terraform template, AWS Transit Gateway to connect VPCs will be created in AWS based on the user parameters, with the following components:
+Using this Terraform template, one instance of FTDv and FMCv will be deployed in  AWS in a new VPC with the following components, 
 
-- One TGW subnet per AZ in service VPC
-- One TGW subnet per AZ in spoke VPC or use existing subnets provider as input
-- Transit Gateway
-- Attachments for Transit Gateway to service and spoke vpc
-- Routing table attachment to each of these subnets
-- Routing rules for Transit Gateway
-- If NAT Subnet IDs and GWLBE Subnet associasted Route table IDs are provided,routes will be added to their route tables for centralized architecture traffic flow.
-
-*Appliance mode is enabled for service VPC Transit Gateway Attachment*
-
-## Topology
-
-<p align="center">
-  <img src="/Users/sameersingh/terraform-cisco-secure-firewall/images/centralized_architecture.png" width="100%">
-</p>
+- one new VPC with four subnets (1 Management networks, 3 data networks)
+- Both the FTD and FMC deployed in the same Availability Zone
+- Routing table attachment to each of these subnets. 
+- EIP attachment to the Management and Outside interfaces.
 
 ## Prerequisites
 
@@ -27,9 +16,6 @@ Make sure you have the following:
 
 - Terraform – Learn how to download and set up [here](https://learn.hashicorp.com/terraform/getting-started/install.html).
 - Programmatic access to AWS account with CLI - learn how to set up [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
-
-The template has been tested on :
-- Terraform = v1.0.11
 
 ## Requirements
 
@@ -40,23 +26,20 @@ The template has been tested on :
 
 ## Providers
 
-No providers.
+| Name | Version |
+|------|---------|
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.7.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_gwlb"></a> [gwlb](#module\_gwlb) | ./modules/gwlb | n/a |
-| <a name="module_gwlbe"></a> [gwlbe](#module\_gwlbe) | ./modules/gwlbe | n/a |
 | <a name="module_instance"></a> [instance](#module\_instance) | ./modules/firewallserver | n/a |
-| <a name="module_nat_gw"></a> [nat\_gw](#module\_nat\_gw) | ./modules/nat_gw | n/a |
 | <a name="module_service_network"></a> [service\_network](#module\_service\_network) | ./modules/network | n/a |
-| <a name="module_spoke_network"></a> [spoke\_network](#module\_spoke\_network) | ./modules/network | n/a |
-| <a name="module_transitgateway"></a> [transitgateway](#module\_transitgateway) | ./modules/transitgateway | n/a |
 
 ## Resources
 
-No resources.
+No Resources.
 
 ## Inputs
 
@@ -64,7 +47,6 @@ No resources.
 |------|-------------|------|---------|:--------:|
 | <a name="input_aws_access_key"></a> [aws\_access\_key](#input\_aws\_access\_key) | AWS ACCESS KEY | `string` | n/a | yes |
 | <a name="input_aws_secret_key"></a> [aws\_secret\_key](#input\_aws\_secret\_key) | AWS SECRET KEY | `string` | n/a | yes |
-| <a name="input_gwlb_name"></a> [gwlb\_name](#input\_gwlb\_name) | name for Gateway loadbalancer | `string` | n/a | yes |
 | <a name="input_keyname"></a> [keyname](#input\_keyname) | key to be used for the instances | `string` | n/a | yes |
 | <a name="input_availability_zone_count"></a> [availability\_zone\_count](#input\_availability\_zone\_count) | Spacified availablity zone count . | `number` | `2` | no |
 | <a name="input_diag_subnet_cidr"></a> [diag\_subnet\_cidr](#input\_diag\_subnet\_cidr) | List out diagonastic Subnet CIDR . | `list(string)` | `[]` | no |
@@ -76,8 +58,6 @@ No resources.
 | <a name="input_ftd_mgmt_ip"></a> [ftd\_mgmt\_ip](#input\_ftd\_mgmt\_ip) | List out management IPs . | `list(string)` | `[]` | no |
 | <a name="input_ftd_outside_ip"></a> [ftd\_outside\_ip](#input\_ftd\_outside\_ip) | List outside IPs . | `list(string)` | `[]` | no |
 | <a name="input_ftd_size"></a> [ftd\_size](#input\_ftd\_size) | FTD Instance Size | `string` | `"c5.xlarge"` | no |
-| <a name="input_gwlbe_subnet_cidr"></a> [gwlbe\_subnet\_cidr](#input\_gwlbe\_subnet\_cidr) | List out GWLBE Subnet CIDR . | `list(string)` | `[]` | no |
-| <a name="input_gwlbe_subnet_name"></a> [gwlbe\_subnet\_name](#input\_gwlbe\_subnet\_name) | List out GWLBE Subnet names . | `list(string)` | `[]` | no |
 | <a name="input_inside_interface_sg"></a> [inside\_interface\_sg](#input\_inside\_interface\_sg) | Can be specified multiple times for each ingress rule. | <pre>list(object({<br>    from_port   = number<br>    protocol    = string<br>    to_port     = number<br>    cidr_blocks = list(string)<br>  }))</pre> | <pre>[<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "from_port": 0,<br>    "protocol": "-1",<br>    "to_port": 0<br>  }<br>]</pre> | no |
 | <a name="input_inside_subnet_cidr"></a> [inside\_subnet\_cidr](#input\_inside\_subnet\_cidr) | List out inside Subnet CIDR . | `list(string)` | `[]` | no |
 | <a name="input_inside_subnet_name"></a> [inside\_subnet\_name](#input\_inside\_subnet\_name) | Specified inside subnet names | `list(string)` | `[]` | no |
@@ -85,8 +65,6 @@ No resources.
 | <a name="input_mgmt_interface_sg"></a> [mgmt\_interface\_sg](#input\_mgmt\_interface\_sg) | Can be specified multiple times for each ingress rule. | <pre>list(object({<br>    from_port   = number<br>    protocol    = string<br>    to_port     = number<br>    cidr_blocks = list(string)<br>  }))</pre> | <pre>[<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "from_port": 0,<br>    "protocol": "-1",<br>    "to_port": 0<br>  }<br>]</pre> | no |
 | <a name="input_mgmt_subnet_cidr"></a> [mgmt\_subnet\_cidr](#input\_mgmt\_subnet\_cidr) | List out management Subnet CIDR . | `list(string)` | `[]` | no |
 | <a name="input_mgmt_subnet_name"></a> [mgmt\_subnet\_name](#input\_mgmt\_subnet\_name) | Specified management subnet names | `list(string)` | `[]` | no |
-| <a name="input_ngw_subnet_cidr"></a> [ngw\_subnet\_cidr](#input\_ngw\_subnet\_cidr) | List out NGW Subnet CIDR . | `list(string)` | `[]` | no |
-| <a name="input_ngw_subnet_name"></a> [ngw\_subnet\_name](#input\_ngw\_subnet\_name) | List out NGW Subnet names . | `list(string)` | `[]` | no |
 | <a name="input_outside_interface_sg"></a> [outside\_interface\_sg](#input\_outside\_interface\_sg) | Can be specified multiple times for each ingress rule. | <pre>list(object({<br>    from_port   = number<br>    protocol    = string<br>    to_port     = number<br>    cidr_blocks = list(string)<br>  }))</pre> | <pre>[<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "from_port": 0,<br>    "protocol": "-1",<br>    "to_port": 0<br>  }<br>]</pre> | no |
 | <a name="input_outside_subnet_cidr"></a> [outside\_subnet\_cidr](#input\_outside\_subnet\_cidr) | List out outside Subnet CIDR . | `list(string)` | `[]` | no |
 | <a name="input_outside_subnet_name"></a> [outside\_subnet\_name](#input\_outside\_subnet\_name) | Specified outside subnet names | `list(string)` | `[]` | no |
@@ -94,14 +72,6 @@ No resources.
 | <a name="input_service_create_igw"></a> [service\_create\_igw](#input\_service\_create\_igw) | Boolean value to decide if to create IGW or not | `bool` | `false` | no |
 | <a name="input_service_vpc_cidr"></a> [service\_vpc\_cidr](#input\_service\_vpc\_cidr) | Service VPC CIDR | `string` | `null` | no |
 | <a name="input_service_vpc_name"></a> [service\_vpc\_name](#input\_service\_vpc\_name) | Service VPC Name | `string` | `null` | no |
-| <a name="input_spoke_create_igw"></a> [spoke\_create\_igw](#input\_spoke\_create\_igw) | Condition to create IGW . | `string` | `true` | no |
-| <a name="input_spoke_subnet_cidr"></a> [spoke\_subnet\_cidr](#input\_spoke\_subnet\_cidr) | List out spoke Subnet CIDR . | `list(string)` | `[]` | no |
-| <a name="input_spoke_subnet_name"></a> [spoke\_subnet\_name](#input\_spoke\_subnet\_name) | List out spoke Subnet names . | `list(string)` | `[]` | no |
-| <a name="input_spoke_vpc_cidr"></a> [spoke\_vpc\_cidr](#input\_spoke\_vpc\_cidr) | Specified CIDR for VPC . | `string` | `null` | no |
-| <a name="input_spoke_vpc_name"></a> [spoke\_vpc\_name](#input\_spoke\_vpc\_name) | Specified VPC Name . | `string` | `null` | no |
-| <a name="input_tgw_subnet_cidr"></a> [tgw\_subnet\_cidr](#input\_tgw\_subnet\_cidr) | List of Transit GW Subnet CIDR | `list(string)` | `[]` | no |
-| <a name="input_tgw_subnet_name"></a> [tgw\_subnet\_name](#input\_tgw\_subnet\_name) | List of name for TGW Subnets | `list(string)` | `[]` | no |
-| <a name="input_transit_gateway_name"></a> [transit\_gateway\_name](#input\_transit\_gateway\_name) | Name of the Transit Gateway created | `string` | `null` | no |
 | <a name="input_use_fmc_eip"></a> [use\_fmc\_eip](#input\_use\_fmc\_eip) | boolean value to use EIP on FMC or not | `bool` | `false` | no |
 | <a name="input_use_ftd_eip"></a> [use\_ftd\_eip](#input\_use\_ftd\_eip) | boolean value to use EIP on FTD or not | `bool` | `false` | no |
 
@@ -110,4 +80,16 @@ No resources.
 | Name | Description |
 |------|-------------|
 | <a name="output_instance_ip"></a> [instance\_ip](#output\_instance\_ip) | Public IP address of the FTD instances |
+
+## Post Deployment Procedure
+
+This configuration is required if you want to NAT the workloads inside the network using the interface's IP address. Both source and destination NAT needs to be configured so that the traffic will be symmetric.
+
+But usually, the servers inside the network, accessed from the public using the static NAT.  To achieve it, you need to configure the following things, 
+
+1) Configure the secondary IP address set in the AWS External interfaces on both the FTDs. 
+	For Example, if you have ten web servers to be accessed from outside, each external interface of AWS should be configured with ten IP addresses. 
+2) Configure the Static NAT in FTD Firewall to map the inside host's IP addresses with the secondary IP addresses. 
+3) Include the Dynamic Source NAT with the inside interface IP addresses of FTD so that the return traffic hits the same firewall. 
+4) To have the Client's IP addresses' visibility, enable the "Preserve Client IP address" option in AWS Target group(s) attached with the load balancers.
 <!-- END_TF_DOCS -->
