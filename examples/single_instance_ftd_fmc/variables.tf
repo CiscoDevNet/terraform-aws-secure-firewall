@@ -85,12 +85,6 @@ variable "fmc_ip" {
   default     = ""
 }
 
-variable "tgw_subnet_cidr" {
-  type        = list(string)
-  description = "List of Transit GW Subnet CIDR"
-  default     = []
-}
-
 variable "availability_zone_count" {
   type        = number
   description = "Spacified availablity zone count . "
@@ -118,12 +112,6 @@ variable "diag_subnet_name" {
 variable "inside_subnet_name" {
   type        = list(string)
   description = "Specified inside subnet names"
-  default     = []
-}
-
-variable "tgw_subnet_name" {
-  type        = list(string)
-  description = "List of name for TGW Subnets"
   default     = []
 }
 
@@ -206,64 +194,6 @@ variable "instances_per_az" {
 }
 
 ########################################################################
-## Spoke  
-########################################################################
-
-variable "spoke_vpc_cidr" {
-  type        = string
-  description = "Specified CIDR for VPC . "
-  default     = null
-}
-
-variable "spoke_vpc_name" {
-  type        = string
-  description = "Specified VPC Name . "
-  default     = null
-}
-
-variable "spoke_create_igw" {
-  type        = string
-  description = " Condition to create IGW . "
-  default     = true
-}
-
-variable "spoke_subnet_cidr" {
-  type        = list(string)
-  description = "List out spoke Subnet CIDR . "
-  default     = []
-}
-
-variable "spoke_subnet_name" {
-  type        = list(string)
-  description = "List out spoke Subnet names . "
-  default     = []
-}
-
-variable "gwlbe_subnet_cidr" {
-  type        = list(string)
-  description = "List out GWLBE Subnet CIDR . "
-  default     = []
-}
-
-variable "gwlbe_subnet_name" {
-  type        = list(string)
-  description = "List out GWLBE Subnet names . "
-  default     = []
-}
-
-variable "ngw_subnet_cidr" {
-  type        = list(string)
-  description = "List out NGW Subnet CIDR . "
-  default     = []
-}
-
-variable "ngw_subnet_name" {
-  type        = list(string)
-  description = "List out NGW Subnet names . "
-  default     = []
-}
-
-########################################################################
 ## Instances
 ########################################################################
 
@@ -276,21 +206,6 @@ variable "ftd_size" {
 variable "keyname" {
   type        = string
   description = "key to be used for the instances"
-}
-
-########################################################################
-## GatewayLoadbalncer 
-########################################################################
-
-variable "gwlb_name" {
-  type        = string
-  description = "name for Gateway loadbalancer"
-}
-
-variable "transit_gateway_name" {
-  type        = string
-  description = "Name of the Transit Gateway created"
-  default     = null
 }
 
 variable "use_ftd_eip" {

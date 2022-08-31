@@ -10,7 +10,7 @@ func TestExamplesBasic(t *testing.T) {
 	t.Parallel()
 
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/centralized_architecture",
+		TerraformDir: "../examples/single_instance_ftd_fmc",
 		VarFiles:     []string{"terraform.tfvars"},
 	})
 
