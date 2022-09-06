@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Cisco Systems, Inc. and its affiliates
+# All rights reserved.
+
 variable "ngw_subnet_cidr" {
   description = "Specified ngw subnet CIDR"
   type        = list(string)

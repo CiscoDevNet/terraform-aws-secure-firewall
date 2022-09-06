@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Cisco Systems, Inc. and its affiliates
+# All rights reserved.
+
 locals {
   con            = var.vpc_cidr != "" ? aws_vpc.ftd_vpc[0].id : data.aws_vpc.ftd_vpc[0].id
   instances      = var.availability_zone_count * var.instances_per_az

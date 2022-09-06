@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Cisco Systems, Inc. and its affiliates
+# All rights reserved.
+
 data "aws_ami" "ftdv" {
   #most_recent = true      // you can enable this if you want to deploy more
   owners = ["aws-marketplace"]

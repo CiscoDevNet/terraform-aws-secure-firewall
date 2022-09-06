@@ -1,9 +1,12 @@
+# Copyright (c) 2022 Cisco Systems, Inc. and its affiliates
+# All rights reserved.
+
 resource "aws_vpc" "ftd_vpc" {
   count                = var.vpc_cidr != "" ? 1 : 0
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
-  enable_classiclink   = false
+  #enable_classiclink   = false
   instance_tenancy     = "default"
   tags = merge({
     Name = var.vpc_name

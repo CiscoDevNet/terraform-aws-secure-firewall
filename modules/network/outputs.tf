@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Cisco Systems, Inc. and its affiliates
+# All rights reserved.
+
 output "vpc_id" {
   description = "VPC ID"
   value       = local.con

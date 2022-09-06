@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Cisco Systems, Inc. and its affiliates
+# All rights reserved.
+
 variable "gwlb_name" {
   type        = string
   description = "name for Gateway loadbalancer"

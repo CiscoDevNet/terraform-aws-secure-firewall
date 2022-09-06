@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Cisco Systems, Inc. and its affiliates
+# All rights reserved.
+
 resource "aws_subnet" "ngw_subnet" {
   count             = length(var.ngw_subnet_cidr) != 0 ? length(var.ngw_subnet_cidr) : 0
   vpc_id            = var.vpc_id

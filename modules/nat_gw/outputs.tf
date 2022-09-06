@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Cisco Systems, Inc. and its affiliates
+# All rights reserved.
+
 output "nat_rt_id" {
   description = "NAT Gateway subnet Route table ID"
   value       = aws_route_table.ngw_route.*.id
