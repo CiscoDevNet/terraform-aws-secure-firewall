@@ -89,7 +89,7 @@ mgmt_interface_sg = [
     from_port   = 8305
     protocol    = "TCP"
     to_port     = 8305
-    cidr_blocks = ["10.0.1.50/32"]
+    cidr_blocks = ["172.16.1.0/24"]//["10.0.1.50/32"]
     description = "Mgmt Traffic from FMC"
   }
 ]
@@ -106,7 +106,7 @@ fmc_mgmt_interface_sg = [
     from_port   = 8305
     protocol    = "TCP"
     to_port     = 8305
-    cidr_blocks = ["10.0.1.10/32", "10.0.10.10/32"]
+    cidr_blocks = ["172.16.1.0/24","172.16.10.0/24"]//["10.0.1.10/32", "10.0.10.10/32"]
     description = "Mgmt Traffic from FTD"
   }
 ]

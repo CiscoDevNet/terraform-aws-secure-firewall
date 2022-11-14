@@ -9,13 +9,13 @@ resource "aws_instance" "ftdv" {
   ami           = data.aws_ami.ftdv.id
   instance_type = var.ftd_size
   key_name      = var.keyname
-  metadata_options {
-    http_endpoint = "enabled"
-    http_tokens   = "required"
-  }
-  root_block_device {
-    encrypted = true
-  }
+  # metadata_options {
+  #   http_endpoint = "enabled"
+  #   http_tokens   = "required"
+  # }
+  # root_block_device {
+  #   encrypted = true
+  # }
   network_interface {
     network_interface_id = element(var.ftd_mgmt_interface, count.index)
     device_index         = 0
@@ -42,13 +42,13 @@ resource "aws_instance" "fmcv" {
   count         = var.create_fmc ? 1 : 0
   ami           = data.aws_ami.fmcv[0].id
   instance_type = "c5.4xlarge"
-  metadata_options {
-    http_endpoint = "enabled"
-    http_tokens   = "required"
-  }
-  root_block_device {
-    encrypted = true
-  }
+  # metadata_options {
+  #   http_endpoint = "enabled"
+  #   http_tokens   = "required"
+  # }
+  # root_block_device {
+  #   encrypted = true
+  # }
   key_name = var.keyname
   network_interface {
     network_interface_id = var.fmcmgmt_interface
