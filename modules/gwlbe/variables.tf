@@ -21,6 +21,7 @@ variable "vpc_id" {
 variable "ngw_id" {
   type        = list(string)
   description = "NAT GW Subnet ID"
+  default = []
 }
 
 variable "gwlb" {

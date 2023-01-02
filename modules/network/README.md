@@ -73,6 +73,8 @@ No Modules.
 | <a name="input_use_ftd_eip"></a> [use\_ftd\_eip](#input\_use\_ftd\_eip) | boolean value to use EIP on FTD or not | `bool` | `false` | no |
 | <a name="input_use_fmc_eip"></a> [use\_fmc\_eip](#input\_use\_fmc\_eip) | boolean value to use EIP on FMC or not | `bool` | `false` | no |
 
+Note: In this build using existing interface resources are not supported. New interfaces will be created.
+
 ## Outputs
 
 | Name | Description |

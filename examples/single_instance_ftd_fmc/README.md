@@ -8,7 +8,7 @@ Using this Terraform template, one instance of FTDv and FMCv will be deployed in
 - one new VPC with four subnets (1 Management networks, 3 data networks)
 - Both the FTD and FMC deployed in the same Availability Zone
 - Routing table attachment to each of these subnets. 
-- EIP attachment to the Management and Outside interfaces.
+- EIP attachment to the Management interface. (optional)
 
 ## Prerequisites
 
@@ -22,19 +22,19 @@ Make sure you have the following:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.5 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.7.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.7.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_instance"></a> [instance](#module\_instance) | ./modules/firewallserver | n/a |
+| <a name="module_instance"></a> [instance](#module\_instance) | ./modules/firewall_instance | n/a |
 | <a name="module_service_network"></a> [service\_network](#module\_service\_network) | ./modules/network | n/a |
 
 ## Resources
@@ -79,7 +79,7 @@ No Resources.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_instance_ip"></a> [instance\_ip](#output\_instance\_ip) | Public IP address of the FTD instances |
+| <a name="output_instance_ip"></a> [instance\_ip](#output\_instance\_ip) | Private IP address of the FTD instance Management Interface |
 
 ## Post Deployment Procedure
 

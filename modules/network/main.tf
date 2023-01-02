@@ -152,6 +152,7 @@ resource "aws_security_group_rule" "mgmt_sg_egress" {
 }
 
 resource "aws_security_group" "fmc_mgmt_sg" {
+  count       = var.create_fmc ? 1 : 0
   name        = "FMC Management Interface SG"
   vpc_id      = local.con
   description = "Secure Firewall FMC MGMT SG"
@@ -160,25 +161,26 @@ resource "aws_security_group" "fmc_mgmt_sg" {
 # tfsec:ignore:aws-vpc-add-description-to-security-group-rule
 # tfsec:ignore:aws-vpc-no-public-ingress-sgr
 resource "aws_security_group_rule" "fmc_mgmt_sg_ingress" {
-  count       = length(var.fmc_mgmt_interface_sg)
+  count       = var.create_fmc ? length(var.fmc_mgmt_interface_sg) : 0
   type        = "ingress"
   from_port   = lookup(var.fmc_mgmt_interface_sg[count.index], "from_port", null)
   to_port     = lookup(var.fmc_mgmt_interface_sg[count.index], "to_port", null)
   protocol    = lookup(var.fmc_mgmt_interface_sg[count.index], "protocol", null)
   cidr_blocks = lookup(var.fmc_mgmt_interface_sg[count.index], "cidr_blocks", null)
   #description = var.outside_interface_sg[count.index].description
-  security_group_id = aws_security_group.fmc_mgmt_sg.id
+  security_group_id = aws_security_group.fmc_mgmt_sg[0].id
 }
 
 # tfsec:ignore:aws-vpc-no-public-egress-sgr
 resource "aws_security_group_rule" "fmc_mgmt_sg_egress" {
+  count             = var.create_fmc ? 1 : 0
   type              = "egress"
   description       = "Secure Firewall FMC MGMT SG"
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.fmc_mgmt_sg.id
+  security_group_id = aws_security_group.fmc_mgmt_sg[0].id
 }
 
 resource "aws_security_group" "no_access" {
@@ -191,8 +193,8 @@ resource "aws_security_group" "no_access" {
 # # # Network Interfaces
 # # ##################################################################################################################################
 resource "aws_network_interface" "ftd_mgmt" {
-  count             = length(var.mgmt_interface) != 0 ? length(var.mgmt_interface) : length(var.ftd_mgmt_ip)
-  description       = "asa${count.index}-mgmt"
+  count             = length(var.mgmt_interface) == 0 ? length(var.ftd_mgmt_ip) : 0
+  description       = "ftd${count.index}-mgmt"
   subnet_id         = local.mgmt_subnet[local.azs[count.index] - 1].id
   source_dest_check = false
   private_ips       = [var.ftd_mgmt_ip[count.index]]
@@ -227,12 +229,12 @@ resource "aws_network_interface" "ftd_diag" {
 }
 
 resource "aws_network_interface" "fmcmgmt" {
-  count             = length(var.fmc_interface) != 0 ? 0 : 1
+  count             = var.create_fmc ? (length(var.fmc_interface) != 0 ? 0 : 1) : 0
   description       = "Fmc_Management"
   subnet_id         = local.mgmt_subnet[local.azs[0] - 1].id
   source_dest_check = false
   private_ips       = [var.fmc_ip]
-  security_groups   = [aws_security_group.fmc_mgmt_sg.id]
+  security_groups   = [aws_security_group.fmc_mgmt_sg[0].id]
 }
 
 # # ##################################################################################################################################
@@ -249,7 +251,7 @@ resource "aws_internet_gateway" "int_gw" {
 }
 
 resource "aws_route_table" "ftd_mgmt_route" {
-  count  = var.create_igw ? (var.mgmt_subnet_cidr != [] ? length(var.mgmt_subnet_cidr) : length(var.mgmt_subnet_name)) : 0
+  count  = var.create_igw ? length(local.mgmt_subnet) : (var.igw_name != "" ? length(local.mgmt_subnet) : 0)
   vpc_id = local.con
   route {
     cidr_block = "0.0.0.0/0"
@@ -262,7 +264,7 @@ resource "aws_route_table" "ftd_mgmt_route" {
 }
 
 resource "aws_route_table" "ftd_outside_route" {
-  count  = length(var.outside_subnet_cidr) != 0 ? length(var.outside_subnet_cidr) : length(var.outside_subnet_name)
+  count  = length(local.outside_subnet)
   vpc_id = local.con
   tags = merge({
     Name = "outside network Routing table"
@@ -270,7 +272,7 @@ resource "aws_route_table" "ftd_outside_route" {
 }
 
 resource "aws_route_table" "ftd_inside_route" {
-  count  = length(var.inside_subnet_cidr) != 0 ? length(var.inside_subnet_cidr) : length(var.inside_subnet_name)
+  count  = length(local.inside_subnet)
   vpc_id = local.con
   tags = merge({
     Name = "inside network Routing table"
@@ -278,7 +280,7 @@ resource "aws_route_table" "ftd_inside_route" {
 }
 
 resource "aws_route_table" "ftd_diag_route" {
-  count  = length(var.diag_subnet_cidr) != 0 ? length(var.diag_subnet_cidr) : length(var.diag_subnet_name)
+  count  = length(local.diag_subnet)
   vpc_id = local.con
   tags = merge({
     Name = "diag network Routing table"
@@ -286,26 +288,26 @@ resource "aws_route_table" "ftd_diag_route" {
 }
 
 resource "aws_route_table_association" "outside_association" {
-  count          = length(var.outside_subnet_cidr) != 0 ? length(var.outside_subnet_cidr) : length(var.outside_subnet_name)
-  subnet_id      = length(var.outside_subnet_cidr) != 0 ? aws_subnet.outside_subnet[count.index].id : data.aws_subnet.outsideftd[count.index].id
+  count          = length(local.outside_subnet)
+  subnet_id      = local.outside_subnet[count.index].id
   route_table_id = aws_route_table.ftd_outside_route[count.index].id
 }
 
 resource "aws_route_table_association" "mgmt_association" {
-  count          = var.create_igw ? (var.mgmt_subnet_cidr != [] ? length(var.mgmt_subnet_cidr) : length(var.mgmt_subnet_name)) : 0
-  subnet_id      = length(var.mgmt_subnet_cidr) != 0 ? aws_subnet.mgmt_subnet[count.index].id : data.aws_subnet.mgmt[count.index].id
+  count          = var.create_igw ? length(local.mgmt_subnet) : 0
+  subnet_id      = local.mgmt_subnet[count.index].id
   route_table_id = aws_route_table.ftd_mgmt_route[count.index].id
 }
 
 resource "aws_route_table_association" "inside_association" {
-  count          = length(var.inside_subnet_cidr) != 0 ? length(var.inside_subnet_cidr) : length(var.inside_subnet_name)
-  subnet_id      = length(var.inside_subnet_cidr) != 0 ? aws_subnet.inside_subnet[count.index].id : data.aws_subnet.insideftd[count.index].id
+  count          = length(local.inside_subnet)
+  subnet_id      = local.inside_subnet[count.index].id
   route_table_id = aws_route_table.ftd_inside_route[count.index].id
 }
 
 resource "aws_route_table_association" "diag_association" {
-  count          = length(var.diag_subnet_cidr) != 0 ? length(var.diag_subnet_cidr) : length(var.diag_subnet_name)
-  subnet_id      = length(var.diag_subnet_cidr) != 0 ? aws_subnet.diag_subnet[count.index].id : data.aws_subnet.diagftd[count.index].id
+  count          = length(local.diag_subnet)
+  subnet_id      = local.diag_subnet[count.index].id
   route_table_id = aws_route_table.ftd_diag_route[count.index].id
 }
 
@@ -334,6 +336,7 @@ resource "aws_eip" "fmcmgmt_eip" {
     "Name" = "FMCv Management IP"
   }
 }
+
 resource "aws_eip_association" "fmc_mgmt_ip_assocation" {
   count                = var.use_fmc_eip ? 1 : 0
   network_interface_id = aws_network_interface.fmcmgmt[0].id

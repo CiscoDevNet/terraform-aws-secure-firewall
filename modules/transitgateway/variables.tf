@@ -10,8 +10,9 @@ variable "vpc_spoke_id" {
   description = "ID of the Spoke VPC"
 }
 variable "spoke_subnet_id" {
-  type        = list(any)
+  type        = list(string)
   description = "ID of the Spoke Subnet"
+  default = []
 }
 
 variable "tgw_subnet_name" {

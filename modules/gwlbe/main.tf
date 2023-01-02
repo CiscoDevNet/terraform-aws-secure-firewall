@@ -13,7 +13,7 @@ resource "aws_subnet" "gwlbe_subnet" {
 }
 
 resource "aws_route_table" "gwlbe_route" {
-  count  = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : length(var.gwlbe_subnet_name)
+  count  = length(var.ngw_id) != 0 ? length(var.ngw_id) : 0
   vpc_id = var.vpc_id
 
   route {
@@ -27,7 +27,7 @@ resource "aws_route_table" "gwlbe_route" {
 }
 
 resource "aws_route_table_association" "gwlbe_association" {
-  count          = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : length(var.gwlbe_subnet_name)
+  count          = length(var.ngw_id) != 0 ? length(var.ngw_id) : 0
   subnet_id      = length(var.gwlbe_subnet_cidr) != 0 ? aws_subnet.gwlbe_subnet[count.index].id : data.aws_subnet.gwlbe[count.index].id
   route_table_id = aws_route_table.gwlbe_route[count.index].id
 }

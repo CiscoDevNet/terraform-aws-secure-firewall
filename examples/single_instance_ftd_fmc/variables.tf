@@ -217,5 +217,5 @@ variable "use_ftd_eip" {
 variable "use_fmc_eip" {
   description = "boolean value to use EIP on FMC or not"
   type        = bool
-  default     = false
+  default     = true
 }

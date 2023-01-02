@@ -28,27 +28,27 @@ output "diag_interface" {
 
 output "fmcmgmt_interface" {
   description = "FMC Mgmt interface id"
-  value       = aws_network_interface.fmcmgmt[0].id
+  value       = var.create_fmc ? aws_network_interface.fmcmgmt[0].id : null
 }
 
 output "mgmt_subnet" {
   description = "Mgmt Subnet id"
-  value       = var.mgmt_subnet_cidr != null ? aws_subnet.mgmt_subnet.*.id : data.aws_subnet.mgmt.*.id
+  value       = local.mgmt_subnet.*.id
 }
 
 output "inside_subnet" {
   description = "Inside Subnet id"
-  value       = var.inside_subnet_cidr != null ? aws_subnet.inside_subnet.*.id : data.aws_subnet.insideftd.*.id
+  value       = local.inside_subnet
 }
 
 output "outside_subnet" {
   description = "Outside Subnet id"
-  value       = var.outside_subnet_cidr != null ? aws_subnet.outside_subnet.*.id : data.aws_subnet.outsideftd.*.id
+  value       = local.outside_subnet.*.id
 }
 
 output "diag_subnet" {
   description = "Diag Subnet id"
-  value       = var.diag_subnet_cidr != null ? aws_subnet.diag_subnet.*.id : data.aws_subnet.diagftd.*.id
+  value       = local.diag_subnet
 }
 
 output "mgmt_interface_ip" {
@@ -73,7 +73,7 @@ output "diag_interface_ip" {
 
 output "fmc_interface_ip" {
   description = "FMC Interface IP"
-  value       = aws_network_interface.fmcmgmt.*.private_ip_list
+  value       = var.create_fmc ? aws_network_interface.fmcmgmt.*.private_ip_list : null
 }
 
 output "internet_gateway" {

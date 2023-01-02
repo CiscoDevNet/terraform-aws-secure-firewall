@@ -19,6 +19,12 @@ variable "create_igw" {
   default     = false
 }
 
+variable "create_fmc" {
+  description = "Boolean value to create FMC or not"
+  type        = bool
+  default     = true
+}
+
 variable "igw_name" {
   description = "name of existing IGW to be used"
   type        = string

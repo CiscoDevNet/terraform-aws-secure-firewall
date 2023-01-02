@@ -6,17 +6,16 @@
 Using this Terraform template, two instances of FTD will be deployed in  Active/Active using AWS native Network Load Balancer in two different Availability Zone, with FMC in a new VPC with the following components, 
 
 - one new VPC with four subnets (1 Management networks, 3 data networks)
-- Both the FTD and FMC deployed in the same Availability Zone
-- Two network security group (one default and the other one is created to allow all traffic)
-*Note*: With the default Security Group, the network is wide open. It is necessary to change the security group to allow only the required traffic to and from the specific IP address and ports. 
+- Security groups associated with the created subnets. 
+*Note*: Change the security groups to allow only the required traffic to and from the specific IP address and ports as required.
 
 - Routing table attachment to each of these subnets. 
-- EIP attachment to the Management and Outside subnets. 
+- EIP attachment to the Management subnet. (Optional) 
 - One External Load Balancer.
 
 ## Topology
 
-<img src="/Users/sameersingh/terraform-cisco-secure-firewall/images/FTD_FMC_A_A_Multiple_AZ/FTD_AA_Multi_AZ.png" alt="FTD A/A in Multiple AZ" style="max-width:50%;">
+<img src="../../images/FTD_AA_Multi_AZ.png" alt="FTD A/A in Multiple AZ" style="max-width:50%;">
 
 ## Prerequisites
 
@@ -30,19 +29,19 @@ Make sure you have the following:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.5 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.7.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.7.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_instance"></a> [instance](#module\_instance) | ./modules/firewallserver | n/a |
+| <a name="module_instance"></a> [instance](#module\_instance) | ./modules/firewall_instance | n/a |
 | <a name="module_service_network"></a> [service\_network](#module\_service\_network) | ./modules/network | n/a |
 
 ## Resources
@@ -95,7 +94,7 @@ Make sure you have the following:
 
 | Name | Description |
 |------|-------------|
-| <a name="output_instance_ip"></a> [instance\_ip](#output\_instance\_ip) | Public IP address of the FTD instances |
+| <a name="output_instance_ip"></a> [instance\_ip](#output\_instance\_ip) | Private IP address of the FTD instances |
 
 ## Post Deployment Procedure
 
@@ -103,8 +102,9 @@ Once the FTD and FMC are successfully deployed, the following steps need to be d
 
 The Load balancing "Health Check" is configured to probe the FTD in port 22 through the external interfaces. If any of these fails, the FTD goes into unhealthy_state, and the traffic will go thru the healthy FTD.
 
-To make "health_check" work, you need to enable the ssh in the FTD "platform settings" for the Loadbalancer IP address to access it, as mentioned in the below screenshot. 
-<img src="https://github.com/CiscoDevNet/Cisco-FTD-PublicCloud/blob/main/AWS/Terraform/FTD_FMC_A_A_Multiple_AZ/FTD_Platformsetting_SSH.png" alt="FTD A/A in Single AZ" style="max-width:50%;">
+To make "health_check" work, you need to enable the ssh in the FTD "platform settings" for the Loadbalancer IP address to access it, as mentioned in the below screenshot.
+
+<img src="../../images/FTD_Platformsetting_SSH.png" alt="FTD Platform settings SSH" style="max-width:50%;">
 
 This configuration is required if you want to NAT the workloads inside the network using the interface's IP address. Both source and destination NAT needs to be configured so that the traffic will be symmetric.
 
@@ -115,9 +115,7 @@ But usually, the servers inside the network, accessed from the public using the 
 	For Example, if you have ten web servers to be accessed from outside, each external interface of AWS should be configured with ten IP addresses. 
 2) Configure the Static NAT in FTD Firewall to map the inside host's IP addresses with the secondary IP addresses. 
 3) Include the Dynamic Source NAT with the inside interface IP addresses of FTD so that the return traffic hits the same firewall. 
-4) To have the Client's IP addresses' visibility, enable the "Preserve Client IP address" option in AWS Target group(s) attached with the load balancers. 
-
-<img src="https://github.com/CiscoDevNet/Cisco-FTD-PublicCloud/blob/main/AWS/Terraform/FTD_FMC_A_A_Multiple_AZ/Preserver_IP_Client.png" alt="FTD A/A in Single AZ" style="max-width:50%;">
+4) To have the Client's IP addresses' visibility, enable the "Preserve Client IP address" option in AWS Target group(s) attached with the load balancers.
 
 
 Note: There are different ways to configure the External Load Balancer and the FTDs to send the traffic across the FTDs for Active/Active Load Balancing with stateless failover. It differs based on the customer's network setup. The details mentioned above are just for the references.  

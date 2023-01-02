@@ -217,7 +217,7 @@ variable "use_ftd_eip" {
 variable "use_fmc_eip" {
   description = "boolean value to use EIP on FMC or not"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "listener_ports" {
@@ -247,3 +247,18 @@ variable "health_check" {
     port     = 22
   }
 }
+
+
+# variable "listener_ports" {
+#   default = {
+#     22  = "TCP"
+#     443 = "TCP"
+#   }
+# }
+
+# variable "health_check" {
+#   default = {
+#     protocol = "TCP"
+#     port = 22
+#   }
+# }

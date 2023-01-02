@@ -4,7 +4,7 @@
 variable "ftd_version" {
   description = "specified FTD version."
   type        = string
-  default     = "ftdv-7.1.0"
+  default     = "ftdv-7.3.0"
   validation {
     error_message = "Version name should include ftdv- followed by version. Example: ftdv-7.1.0."
     condition     = can(regex("^ftdv-.*", var.ftd_version))
@@ -20,7 +20,7 @@ variable "create_fmc" {
 variable "fmc_version" {
   description = "specified FMC version."
   type        = string
-  default     = "fmcv-7.1.0"
+  default     = "fmcv-7.3.0"
   validation {
     error_message = "Version name should include fmcv- followed by version. Example: fmcv-7.1.0."
     condition     = can(regex("^fmcv-.*", var.fmc_version))

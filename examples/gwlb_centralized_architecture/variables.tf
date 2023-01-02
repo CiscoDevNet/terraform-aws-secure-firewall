@@ -91,6 +91,12 @@ variable "tgw_subnet_cidr" {
   default     = []
 }
 
+variable "lambda_subnet_cidr" {
+  type        = string
+  description = "Lambda Subnet CIDR"
+  default     = ""
+}
+
 variable "availability_zone_count" {
   type        = number
   description = "Spacified availablity zone count . "
@@ -125,6 +131,12 @@ variable "tgw_subnet_name" {
   type        = list(string)
   description = "List of name for TGW Subnets"
   default     = []
+}
+
+variable "lambda_subnet_name" {
+  type        = string
+  description = "Name for Lambda Subnet"
+  default     = ""
 }
 
 variable "outside_interface_sg" {
@@ -303,4 +315,23 @@ variable "use_fmc_eip" {
   description = "boolean value to use EIP on FMC or not"
   type        = bool
   default     = false
+}
+
+variable "ftd_version" {
+  default = "ftdv-7.3.0"
+}
+
+variable "fmc_version" {
+  default = "fmcv-7.2.0"
+}
+
+variable "create_fmc" {
+  description = "Boolean value to create FMC or not"
+  type        = bool
+  default     = true
+}
+
+variable "lambda_func_name" {
+    type = string
+    default = "fmc_config_func"
 }

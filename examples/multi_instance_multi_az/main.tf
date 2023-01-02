@@ -76,15 +76,15 @@ resource "aws_lb_listener" "listener1_1" {
 }
 
 resource "aws_lb_target_group_attachment" "target1_1a" {
-  count            = length(var.listener_ports)
+  count            = length(var.ftd_outside_ip)
   depends_on       = [aws_lb_target_group.front_end1_1]
-  target_group_arn = aws_lb_target_group.front_end1_1[count.index].arn
-  target_id        = var.ftd_outside_ip[0]
+  target_group_arn = aws_lb_target_group.front_end1_1[0].arn
+  target_id        = var.ftd_outside_ip[count.index]
 }
 
-resource "aws_lb_target_group_attachment" "target1_2a" {
-  count            = length(var.listener_ports)
+resource "aws_lb_target_group_attachment" "target1_1b" {
+  count            = length(var.ftd_outside_ip)
   depends_on       = [aws_lb_target_group.front_end1_1]
-  target_group_arn = aws_lb_target_group.front_end1_1[count.index].arn
-  target_id        = var.ftd_outside_ip[1]
+  target_group_arn = aws_lb_target_group.front_end1_1[1].arn
+  target_id        = var.ftd_outside_ip[count.index]
 }

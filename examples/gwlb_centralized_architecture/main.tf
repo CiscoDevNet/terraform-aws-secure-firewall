@@ -2,6 +2,7 @@ module "service_network" {
   source                = "../../modules/network"
   vpc_cidr              = var.service_vpc_cidr
   vpc_name              = var.service_vpc_name
+  create_fmc            = var.create_fmc
   create_igw            = var.service_create_igw
   mgmt_subnet_cidr      = var.mgmt_subnet_cidr
   ftd_mgmt_ip           = var.ftd_mgmt_ip
@@ -35,6 +36,8 @@ module "spoke_network" {
 
 module "instance" {
   source                  = "../../modules/firewall_instance"
+  ftd_version             = var.ftd_version
+  create_fmc              = var.create_fmc
   keyname                 = var.keyname
   ftd_size                = var.ftd_size
   instances_per_az        = var.instances_per_az
@@ -44,7 +47,6 @@ module "instance" {
   ftd_inside_interface    = module.service_network.inside_interface
   ftd_outside_interface   = module.service_network.outside_interface
   ftd_diag_interface      = module.service_network.diag_interface
-  fmcmgmt_interface       = module.service_network.fmcmgmt_interface
 }
 
 module "nat_gw" {
@@ -87,4 +89,3 @@ module "transitgateway" {
   nat_subnet_routetable_ids   = module.nat_gw.nat_rt_id
   gwlbe_subnet_routetable_ids = module.gwlbe.gwlbe_rt_id
 }
-

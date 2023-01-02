@@ -2,7 +2,7 @@
 # All rights reserved.
 
 data "aws_ami" "ftdv" {
-  #most_recent = true      // you can enable this if you want to deploy more
+  #most_recent = true
   owners = ["aws-marketplace"]
 
   filter {
@@ -32,7 +32,7 @@ data "template_file" "ftd_startup_file" {
 }
 
 data "aws_ami" "fmcv" {
-  #most_recent = true      // you can enable this if you want to deploy more
+  #most_recent = true
   count  = var.create_fmc ? 1 : 0
   owners = ["aws-marketplace"]
   filter {
