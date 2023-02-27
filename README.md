@@ -17,9 +17,7 @@ Using this Terraform template, AWS Transit Gateway to connect VPCs will be creat
 
 ## Topology
 
-<p align="center">
-  <img src="./images/centralized\_architecture.png" alt="GWLB Centralized Architecture" width="100%">
-</p>
+![GWLB Centralized Architecture](./images/centralized\_architecture.png)
 
 ## Prerequisites
 
@@ -56,13 +54,19 @@ No providers.
 
 ## Resources
 
-No resources.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input\_time\_sleep"></a> [time\\_sleep](#input\\_time\\_sleep) | TIME SLEEP | `string` | n/a | yes |
+| <a name="input\_aws\_subnet"></a> [aws\\_subnet](#input\\_aws\\_subnet) | AWS SUBNET | `string` | n/a | yes |
+| <a name="input\_aws\_security\_group"></a> [aws\\_security\\_group](#input\\_aws\\_security\\_group) | AWS SECURITY GROUP FOR LAMBDA | `string` | n/a | yes |
+| <a name="input\_aws\_lambda\_layer\_version"></a> [aws\\_lambda\\_layer\\_version](#input\\_aws\\_lambda\\_layer\\_version) | AWS LAMBDA LAYER | `string` | n/a | yes |
+| <a name="input\_aws\_lambda\_function"></a> [aws\\_lambda\\_function](#input\\_aws\\_lambda\\_function) | AWS LAMBDA FUNCTION | `string` | n/a | yes |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input\_aws\_access\_key"></a> [aws\\_access\\_key](#input\\_aws\\_access\\_key) | AWS ACCESS KEY | `string` | n/a | yes |
+| <a name="input\_aws_access_key"></a> [aws\\_access\\_key](#input\\_aws\\_access\\_key) | AWS ACCESS KEY | `string` | n/a | yes |
 | <a name="input\_aws\_secret\_key"></a> [aws\\_secret\\_key](#input\\_aws\\_secret\\_key) | AWS SECRET KEY | `string` | n/a | yes |
 | <a name="input\_gwlb\_name"></a> [gwlb\\_name](#input\\_gwlb\\_name) | name for Gateway loadbalancer | `string` | n/a | yes |
 | <a name="input\_keyname"></a> [keyname](#input\\_keyname) | key to be used for the instances | `string` | n/a | yes |
