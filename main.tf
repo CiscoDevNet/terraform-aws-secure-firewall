@@ -1,7 +1,7 @@
 module "service_network" {
-  source                = "/Users/sameersingh/git_repos/secure-firewall-aws/modules/network"
-  vpc_cidr              = var.service_vpc_cidr
+  source                = "CiscoDevNet/secure-firewall/aws//modules/network"
   vpc_name              = var.service_vpc_name
+  create_fmc            = var.create_fmc
   create_igw            = var.service_create_igw
   mgmt_subnet_cidr      = var.mgmt_subnet_cidr
   ftd_mgmt_ip           = var.ftd_mgmt_ip
@@ -25,7 +25,7 @@ module "service_network" {
 }
 
 module "spoke_network" {
-  source           = "/Users/sameersingh/git_repos/secure-firewall-aws/modules/network"
+  source           = "CiscoDevNet/secure-firewall/aws//modules/network"
   vpc_cidr         = var.spoke_vpc_cidr
   vpc_name         = var.spoke_vpc_name
   create_igw       = var.spoke_create_igw
@@ -34,7 +34,9 @@ module "spoke_network" {
 }
 
 module "instance" {
-  source                  = "/Users/sameersingh/git_repos/secure-firewall-aws/modules/firewall_instance"
+  source                  = "CiscoDevNet/secure-firewall/aws//modules/firewall_instance"
+  ftd_version             = var.ftd_version
+  create_fmc              = var.create_fmc
   keyname                 = var.keyname
   ftd_size                = var.ftd_size
   instances_per_az        = var.instances_per_az
@@ -44,11 +46,10 @@ module "instance" {
   ftd_inside_interface    = module.service_network.inside_interface
   ftd_outside_interface   = module.service_network.outside_interface
   ftd_diag_interface      = module.service_network.diag_interface
-  fmcmgmt_interface       = module.service_network.fmcmgmt_interface
 }
 
 module "nat_gw" {
-  source                  = "/Users/sameersingh/git_repos/secure-firewall-aws/modules/nat_gw"
+  source                  = "CiscoDevNet/secure-firewall/aws//modules/nat_gw"
   ngw_subnet_cidr         = var.ngw_subnet_cidr
   ngw_subnet_name         = var.ngw_subnet_name
   availability_zone_count = var.availability_zone_count
@@ -56,7 +57,7 @@ module "nat_gw" {
 }
 
 module "gwlb" {
-  source      = "/Users/sameersingh/git_repos/secure-firewall-aws/modules/gwlb"
+  source      = "CiscoDevNet/secure-firewall/aws//modules/gwlb"
   gwlb_name   = var.gwlb_name
   gwlb_subnet = module.service_network.outside_subnet
   gwlb_vpc_id = module.service_network.vpc_id
@@ -64,7 +65,7 @@ module "gwlb" {
 }
 
 module "gwlbe" {
-  source            = "/Users/sameersingh/git_repos/secure-firewall-aws/modules/gwlbe"
+  source            = "CiscoDevNet/secure-firewall/aws//modules/gwlbe"
   gwlbe_subnet_cidr = var.gwlbe_subnet_cidr
   gwlbe_subnet_name = var.gwlbe_subnet_name
   vpc_id            = module.service_network.vpc_id
@@ -73,7 +74,7 @@ module "gwlbe" {
 }
 
 module "transitgateway" {
-  source                      = "/Users/sameersingh/git_repos/secure-firewall-aws/modules/transitgateway"
+  source                      = "CiscoDevNet/secure-firewall/aws//modules/transitgateway"
   vpc_service_id              = module.service_network.vpc_id
   vpc_spoke_id                = module.spoke_network.vpc_id
   tgw_subnet_cidr             = var.tgw_subnet_cidr
@@ -88,3 +89,75 @@ module "transitgateway" {
   gwlbe_subnet_routetable_ids = module.gwlbe.gwlbe_rt_id
 }
 
+#--------------------------------------------------------------------
+
+#the code waits for 600 seconds for the resources above to be deployed and up
+resource "time_sleep" "wait_720_seconds" {
+  depends_on = [
+    module.instance
+  ]
+  create_duration = "720s"
+}
+
+resource "aws_subnet" "lambda" {
+  vpc_id     = data.aws_vpc.ftd_vpc.id
+  cidr_block = var.lambda_subnet_cidr
+
+  tags = {
+    Name = var.lambda_subnet_name
+  }
+}
+
+resource "aws_security_group" "sg_for_lambda" {
+  name   = "lambda_sg"
+  vpc_id = data.aws_vpc.ftd_vpc.id
+
+  ingress {
+    description = "TLS from VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["172.16.220.0/24"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+resource "aws_lambda_layer_version" "lambda_layer" {
+  filename   = "autoscale_layer.zip"
+  layer_name = "fmc_config_layer"
+
+  compatible_runtimes = ["python3.9"]
+}
+
+resource "aws_lambda_function" "lambda" {
+  filename      = "fmc_latest.py.zip"
+  function_name = var.lambda_func_name
+  role          = "arn:aws:iam::399918941163:role/service-role/sameesin_test-role-yao0bkem" //data.aws_iam_role.iam_for_lambda.arn
+  handler       = "fmc_latest.lambda_handler"
+  runtime       = "python3.9"
+  layers        = [aws_lambda_layer_version.lambda_layer.arn]
+  timeout       = 900
+  vpc_config {
+    subnet_ids         = [aws_subnet.lambda.id]
+    security_group_ids = [aws_security_group.sg_for_lambda.id]
+  }
+
+  environment {
+    variables = {
+      ADDR     = var.fmc_ip,
+      USERNAME = "admin",
+      PASSWORD = "Cisco@123",
+      FTD1     = var.ftd_mgmt_ip[0],
+      FTD2     = var.ftd_mgmt_ip[1],
+      gw1      = "10.5.29.1",
+      gw2      = "10.5.190.1"
+    }
+  }
+}
