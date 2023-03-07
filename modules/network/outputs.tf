@@ -6,6 +6,11 @@ output "vpc_id" {
   value       = local.con
 }
 
+output "vpc_cidr" {
+  description = "VPC CIDR"
+  value       = var.vpc_cidr != "" ? var.vpc_cidr : data.aws_vpc.ftd_vpc[0].cidr_block
+}
+
 output "mgmt_interface" {
   description = "Mgmt interface id"
   value       = aws_network_interface.ftd_mgmt.*.id
@@ -53,27 +58,27 @@ output "diag_subnet" {
 
 output "mgmt_interface_ip" {
   description = "Mgmt Interface IP"
-  value       = aws_network_interface.ftd_mgmt.*.private_ip_list
+  value       = aws_network_interface.ftd_mgmt.*.private_ip
 }
 
 output "inside_interface_ip" {
   description = "Inside Interface IP"
-  value       = aws_network_interface.ftd_inside.*.private_ip_list
+  value       = aws_network_interface.ftd_inside.*.private_ip
 }
 
 output "outside_interface_ip" {
   description = "outside Interface IP"
-  value       = aws_network_interface.ftd_outside.*.private_ip_list
+  value       = aws_network_interface.ftd_outside.*.private_ip
 }
 
 output "diag_interface_ip" {
   description = "Diag Interface IP"
-  value       = aws_network_interface.ftd_diag.*.private_ip_list
+  value       = aws_network_interface.ftd_diag.*.private_ip
 }
 
 output "fmc_interface_ip" {
   description = "FMC Interface IP"
-  value       = var.create_fmc ? aws_network_interface.fmcmgmt.*.private_ip_list : null
+  value       = var.create_fmc ? aws_network_interface.fmcmgmt.*.private_ip : null
 }
 
 output "internet_gateway" {

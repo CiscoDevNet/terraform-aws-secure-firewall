@@ -192,50 +192,95 @@ resource "aws_security_group" "no_access" {
 # # ##################################################################################################################################
 # # # Network Interfaces
 # # ##################################################################################################################################
+
+# when ip assigned using DHCP
 resource "aws_network_interface" "ftd_mgmt" {
-  count             = length(var.mgmt_interface) == 0 ? length(var.ftd_mgmt_ip) : 0
+  count             = length(var.mgmt_subnet_cidr) != 0 ? length(var.mgmt_subnet_cidr) : (length(var.mgmt_subnet_name) != 0 ? length(var.mgmt_subnet_name) : 0)
   description       = "ftd${count.index}-mgmt"
   subnet_id         = local.mgmt_subnet[local.azs[count.index] - 1].id
   source_dest_check = false
-  private_ips       = [var.ftd_mgmt_ip[count.index]]
+  #private_ips       = [var.ftd_mgmt_ip[count.index]]
   security_groups   = [aws_security_group.mgmt_sg.id]
 }
 
+# IP address statically assigned
+# resource "aws_network_interface" "ftd_mgmt" {
+#   count             = length(var.mgmt_interface) == 0 ? length(var.ftd_mgmt_ip) : 0
+#   description       = "ftd${count.index}-mgmt"
+#   subnet_id         = local.mgmt_subnet[local.azs[count.index] - 1].id
+#   source_dest_check = false
+#   private_ips       = [var.ftd_mgmt_ip[count.index]]
+#   security_groups   = [aws_security_group.mgmt_sg.id]
+# }
+
+# when ip assigned using DHCP
 resource "aws_network_interface" "ftd_outside" {
-  count             = length(var.outside_interface) != 0 ? length(var.outside_interface) : length(var.ftd_outside_ip)
+  count             = length(var.outside_subnet_cidr) != 0 ? length(var.outside_subnet_cidr) : (length(var.outside_subnet_name) != 0 ? length(var.outside_subnet_name) : 0)
   description       = "asa${count.index}-outside"
   subnet_id         = local.outside_subnet[local.azs[count.index] - 1].id
   source_dest_check = false
-  private_ips       = [var.ftd_outside_ip[count.index]]
+  #private_ips       = [var.ftd_outside_ip[count.index]]
   security_groups   = [aws_security_group.outside_sg.id]
 }
 
+# IP address statically assigned
+# resource "aws_network_interface" "ftd_outside" {
+#   count             = length(var.outside_interface) == 0 ? length(var.ftd_outside_ip) : 0
+#   description       = "asa${count.index}-outside"
+#   subnet_id         = local.outside_subnet[local.azs[count.index] - 1].id
+#   source_dest_check = false
+#   private_ips       = [var.ftd_outside_ip[count.index]]
+#   security_groups   = [aws_security_group.outside_sg.id]
+# }
+
+# when ip assigned using DHCP
 resource "aws_network_interface" "ftd_inside" {
-  count             = length(var.inside_interface) != 0 ? length(var.inside_interface) : length(var.ftd_inside_ip)
+  count             = length(var.inside_subnet_cidr) != 0 ? length(var.inside_subnet_cidr) : (length(var.inside_subnet_name) != 0 ? length(var.inside_subnet_name) : 0)
   description       = "asa${count.index}-inside"
   subnet_id         = local.inside_subnet[local.azs[count.index] - 1].id
   source_dest_check = false
-  private_ips       = [var.ftd_inside_ip[count.index]]
+  #private_ips       = [var.ftd_inside_ip[count.index]]
   security_groups   = [aws_security_group.inside_sg.id]
 }
 
+# IP address statically assigned
+# resource "aws_network_interface" "ftd_inside" {
+#   count             = length(var.inside_interface) == 0 ? length(var.ftd_inside_ip) : 0
+#   description       = "asa${count.index}-inside"
+#   subnet_id         = local.inside_subnet[local.azs[count.index] - 1].id
+#   source_dest_check = false
+#   #private_ips       = [var.ftd_inside_ip[count.index]]
+#   security_groups   = [aws_security_group.inside_sg.id]
+# }
+
 resource "aws_network_interface" "ftd_diag" {
-  count             = length(var.diag_interface) != 0 ? length(var.diag_interface) : length(var.ftd_diag_ip)
+  count             = length(var.diag_subnet_cidr) != 0 ? length(var.diag_subnet_cidr) : (length(var.diag_subnet_name) != 0 ? length(var.diag_subnet_name) : 0)
   description       = "asa{count.index}-diag"
   subnet_id         = local.diag_subnet[local.azs[count.index] - 1].id
   source_dest_check = false
-  private_ips       = [var.ftd_diag_ip[count.index]]
+  #private_ips       = [var.ftd_diag_ip[count.index]]
   security_groups   = [aws_security_group.no_access.id]
 }
 
+#DHCP
 resource "aws_network_interface" "fmcmgmt" {
-  count             = var.create_fmc ? (length(var.fmc_interface) != 0 ? 0 : 1) : 0
+  count             = var.create_fmc ? (length(var.fmc_interface) != 0 ? 0 : var.fmc_ip == "" ? 0 : 1) : 0
   description       = "Fmc_Management"
   subnet_id         = local.mgmt_subnet[local.azs[0] - 1].id
   source_dest_check = false
-  private_ips       = [var.fmc_ip]
+  #private_ips       = [var.fmc_ip]
   security_groups   = [aws_security_group.fmc_mgmt_sg[0].id]
 }
+
+#Static FMC IP
+# resource "aws_network_interface" "fmcmgmt" {
+#   count             = var.create_fmc ? (length(var.fmc_interface) != 0 ? 0 : 1) : 0
+#   description       = "Fmc_Management"
+#   subnet_id         = local.mgmt_subnet[local.azs[0] - 1].id
+#   source_dest_check = false
+#   private_ips       = [var.fmc_ip]
+#   security_groups   = [aws_security_group.fmc_mgmt_sg[0].id]
+# }
 
 # # ##################################################################################################################################
 # # #Internet Gateway and Routing Tables
