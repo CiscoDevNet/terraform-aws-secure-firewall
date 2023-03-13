@@ -83,10 +83,10 @@ output "fmc_interface_ip" {
 
 output "internet_gateway" {
   description = "Internet Gateway ID"
-  value       = var.create_igw ? aws_internet_gateway.int_gw.*.id : data.aws_internet_gateway.default.*.internet_gateway_id
+  value       = var.create_igw ? aws_internet_gateway.int_gw[0].id : data.aws_internet_gateway.default[0].id
 }
 
-output "mgmt_rt_id" {
-  description = "Mgmt subnet Route table ID"
-  value       = aws_route_table.ftd_mgmt_route.*.id
+output "outside_rt_id" {
+  description = "Outside subnet Route table ID"
+  value       = aws_route_table.ftd_outside_route.*.id
 }

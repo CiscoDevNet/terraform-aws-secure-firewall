@@ -26,6 +26,20 @@ resource "aws_route_table" "gwlbe_route" {
   }
 }
 
+resource "aws_route_table" "igw_route" {
+  count  = var.igw_id != "" ? 1 : 0
+  vpc_id = var.vpc_id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = var.igw_id
+  }
+
+  tags = {
+    Name = "GWLB-RT-${count.index + 1}"
+  }
+}
+
 resource "aws_route_table_association" "gwlbe_association" {
   count          = length(var.ngw_id) != 0 ? length(var.ngw_id) : 0
   subnet_id      = length(var.gwlbe_subnet_cidr) != 0 ? aws_subnet.gwlbe_subnet[count.index].id : data.aws_subnet.gwlbe[count.index].id

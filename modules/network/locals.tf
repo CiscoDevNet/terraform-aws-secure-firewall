@@ -9,4 +9,5 @@ locals {
   outside_subnet = length(var.outside_subnet_cidr) != 0 ? aws_subnet.outside_subnet : data.aws_subnet.outsideftd
   diag_subnet    = length(var.diag_subnet_cidr) != 0 ? aws_subnet.diag_subnet : data.aws_subnet.diagftd
   azs            = chunklist(sort(flatten(chunklist(setproduct(range(local.instances), range(1, (var.availability_zone_count + 1))), local.instances)[0])), local.instances)[1]
+  igw            = var.create_igw ? aws_internet_gateway.int_gw[0].id : data.aws_internet_gateway.default[0].id
 }

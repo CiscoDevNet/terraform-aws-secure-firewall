@@ -25,3 +25,7 @@ variable "vpc_id" {
   default     = ""
 }
  
+variable "internet_gateway" {
+  type = string
+  default = ""
+}

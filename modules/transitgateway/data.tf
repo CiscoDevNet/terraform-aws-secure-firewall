@@ -15,3 +15,11 @@ data "aws_subnet" "tgw_subnet" {
     values = [var.tgw_subnet_name[count.index]]
   }
 }
+
+data "aws_ec2_transit_gateway" "tgw" {
+  count = var.create_tgw ? 0 : 1
+  filter {
+    name   = "tag:Name"
+    values = [var.transit_gateway_name]
+  }
+}

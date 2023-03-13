@@ -15,6 +15,10 @@ resource "aws_subnet" "ngw_subnet" {
 resource "aws_route_table" "ngw_route" {
   count  = length(var.ngw_subnet_cidr) != 0 ? length(var.ngw_subnet_cidr) : length(var.ngw_subnet_name)
   vpc_id = var.vpc_id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = var.internet_gateway
+  }
   tags = {
     Name = "nat gw network Routing table"
   }

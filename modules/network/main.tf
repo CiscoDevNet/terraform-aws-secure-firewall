@@ -300,7 +300,7 @@ resource "aws_route_table" "ftd_mgmt_route" {
   vpc_id = local.con
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.int_gw[0].id
+    gateway_id = local.igw
   }
 
   tags = merge({
@@ -309,7 +309,7 @@ resource "aws_route_table" "ftd_mgmt_route" {
 }
 
 resource "aws_route_table" "ftd_outside_route" {
-  count  = length(local.outside_subnet)
+  count  = var.vpc_cidr == "" ? 0 : length(local.outside_subnet)
   vpc_id = local.con
   tags = merge({
     Name = "outside network Routing table"
@@ -333,7 +333,7 @@ resource "aws_route_table" "ftd_diag_route" {
 }
 
 resource "aws_route_table_association" "outside_association" {
-  count          = length(local.outside_subnet)
+  count          = var.vpc_cidr == "" ? 0 : length(local.outside_subnet)
   subnet_id      = local.outside_subnet[count.index].id
   route_table_id = aws_route_table.ftd_outside_route[count.index].id
 }

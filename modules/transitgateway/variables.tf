@@ -1,6 +1,11 @@
 # Copyright (c) 2022 Cisco Systems, Inc. and its affiliates
 # All rights reserved.
 
+variable "create_tgw" {
+  type = bool
+  default = true
+}
+
 variable "vpc_service_id" {
   type        = string
   description = "ID of the service VPC"

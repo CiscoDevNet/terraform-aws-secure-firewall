@@ -50,3 +50,11 @@ data "aws_internet_gateway" "default" {
     values = [local.con]
   }
 }
+
+data "aws_vpc" "spoke_vpc" {
+  count = var.vpc_cidr == "" ? 1 : 0
+  filter {
+    name   = "tag:Name"
+    values = [var.vpc_name]
+  }
+}

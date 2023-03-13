@@ -24,6 +24,12 @@ variable "ngw_id" {
   default = []
 }
 
+variable "igw_id" {
+  type        = string
+  description = "Internet Gateway ID"
+  default = ""
+}
+
 variable "gwlb" {
   type        = list(string)
   description = "Gateway Loadbalancer arn"
