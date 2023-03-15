@@ -27,7 +27,7 @@ resource "aws_route_table" "gwlbe_route" {
 }
 
 resource "aws_route_table" "igw_route" {
-  count  = var.igw_id != "" ? 1 : 0
+  count  = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : 0
   vpc_id = var.vpc_id
 
   route {
@@ -44,6 +44,19 @@ resource "aws_route_table_association" "gwlbe_association" {
   count          = length(var.ngw_id) != 0 ? length(var.ngw_id) : 0
   subnet_id      = length(var.gwlbe_subnet_cidr) != 0 ? aws_subnet.gwlbe_subnet[count.index].id : data.aws_subnet.gwlbe[count.index].id
   route_table_id = aws_route_table.gwlbe_route[count.index].id
+}
+
+resource "aws_route_table_association" "gwlbe_igw_association" {
+  count          = length(var.ngw_id) == 0 ? length(var.gwlbe_subnet_cidr) : 0
+  subnet_id      = length(var.gwlbe_subnet_cidr) != 0 ? aws_subnet.gwlbe_subnet[count.index].id : data.aws_subnet.gwlbe[count.index].id
+  route_table_id = aws_route_table.igw_route[count.index].id
+}
+
+resource "aws_route" "spoke_route" {
+  count                  = length(data.aws_route_table.spoke_rt)
+  route_table_id         = data.aws_route_table.spoke_rt[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+  transit_gateway_id     = aws_vpc_endpoint.glwbe[count.index].id
 }
 
 resource "aws_vpc_endpoint_service" "glwbes" {

@@ -62,9 +62,9 @@ resource "aws_subnet" "diag_subnet" {
 # # #################################################################################################################################
 
 resource "aws_security_group" "outside_sg" {
-  name        = "Outside Interface SG"
+  name        = "Outside InterfaceSG"
   vpc_id      = local.con
-  description = "Secure Firewall Outside SG"
+  description = "Secure Firewall OutsideSG"
 }
 
 # tfsec:ignore:aws-vpc-add-description-to-security-group-rule
@@ -83,7 +83,7 @@ resource "aws_security_group_rule" "outside_sg_ingress" {
 # tfsec:ignore:aws-vpc-no-public-egress-sgr
 resource "aws_security_group_rule" "outside_sg_egress" {
   type              = "egress"
-  description       = "Secure Firewall Outside SG"
+  description       = "Secure Firewall OutsideSG"
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
@@ -92,9 +92,9 @@ resource "aws_security_group_rule" "outside_sg_egress" {
 }
 
 resource "aws_security_group" "inside_sg" {
-  name        = "Inside Interface SG"
+  name        = "Inside InterfaceSG"
   vpc_id      = local.con
-  description = "Secure Firewall Inside SG"
+  description = "Secure Firewall InsideSG"
 }
 
 # tfsec:ignore:aws-vpc-add-description-to-security-group-rule
@@ -113,7 +113,7 @@ resource "aws_security_group_rule" "inside_sg_ingress" {
 # tfsec:ignore:aws-vpc-no-public-egress-sgr
 resource "aws_security_group_rule" "inside_sg_egress" {
   type              = "egress"
-  description       = "Secure Firewall Inside SG"
+  description       = "Secure Firewall InsideSG"
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
@@ -122,9 +122,9 @@ resource "aws_security_group_rule" "inside_sg_egress" {
 }
 
 resource "aws_security_group" "mgmt_sg" {
-  name        = "FTD Management Interface SG"
+  name        = "FTD Management InterfaceSG"
   vpc_id      = local.con
-  description = "Secure Firewall MGMT SG"
+  description = "Secure Firewall MGMTSG"
 }
 
 # tfsec:ignore:aws-vpc-add-description-to-security-group-rule
@@ -143,7 +143,7 @@ resource "aws_security_group_rule" "mgmt_sg_ingress" {
 # tfsec:ignore:aws-vpc-no-public-egress-sgr
 resource "aws_security_group_rule" "mgmt_sg_egress" {
   type              = "egress"
-  description       = "Secure Firewall MGMT SG"
+  description       = "Secure Firewall MGMTSG"
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
@@ -153,9 +153,9 @@ resource "aws_security_group_rule" "mgmt_sg_egress" {
 
 resource "aws_security_group" "fmc_mgmt_sg" {
   count       = var.create_fmc ? 1 : 0
-  name        = "FMC Management Interface SG"
+  name        = "FMC Management InterfaceSG"
   vpc_id      = local.con
-  description = "Secure Firewall FMC MGMT SG"
+  description = "Secure Firewall FMC MGMTSG"
 }
 
 # tfsec:ignore:aws-vpc-add-description-to-security-group-rule
@@ -175,7 +175,7 @@ resource "aws_security_group_rule" "fmc_mgmt_sg_ingress" {
 resource "aws_security_group_rule" "fmc_mgmt_sg_egress" {
   count             = var.create_fmc ? 1 : 0
   type              = "egress"
-  description       = "Secure Firewall FMC MGMT SG"
+  description       = "Secure Firewall FMC MGMTSG"
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
@@ -186,7 +186,7 @@ resource "aws_security_group_rule" "fmc_mgmt_sg_egress" {
 resource "aws_security_group" "no_access" {
   name        = "No Access"
   vpc_id      = local.con
-  description = "No Access SG"
+  description = "No AccessSG"
 }
 
 # # ##################################################################################################################################
@@ -309,7 +309,7 @@ resource "aws_route_table" "ftd_mgmt_route" {
 }
 
 resource "aws_route_table" "ftd_outside_route" {
-  count  = var.vpc_cidr == "" ? 0 : length(local.outside_subnet)
+  count  = length(local.outside_subnet)
   vpc_id = local.con
   tags = merge({
     Name = "outside network Routing table"
@@ -333,7 +333,7 @@ resource "aws_route_table" "ftd_diag_route" {
 }
 
 resource "aws_route_table_association" "outside_association" {
-  count          = var.vpc_cidr == "" ? 0 : length(local.outside_subnet)
+  count          = length(local.outside_subnet)
   subnet_id      = local.outside_subnet[count.index].id
   route_table_id = aws_route_table.ftd_outside_route[count.index].id
 }

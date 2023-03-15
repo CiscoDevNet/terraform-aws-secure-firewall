@@ -34,3 +34,8 @@ variable "gwlb" {
   type        = list(string)
   description = "Gateway Loadbalancer arn"
 }
+
+variable "spoke_rt_id" {
+  type = list(string)
+  default = []
+}

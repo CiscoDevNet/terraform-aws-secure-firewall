@@ -10,3 +10,8 @@ data "aws_subnet" "gwlbe" {
     values = [var.gwlbe_subnet_name[count.index]]
   }
 }
+
+data "aws_route_table" "spoke_rt" {
+  count          = length(var.spoke_rt_id)
+  route_table_id = var.spoke_rt_id[count.index]
+}
