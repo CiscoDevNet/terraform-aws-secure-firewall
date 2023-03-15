@@ -31,6 +31,12 @@ variable "service_create_igw" {
   default     = false
 }
 
+variable "service_igw_name" {
+  description = "name of existing IGW to be used"
+  type        = string
+  default     = ""
+}
+
 variable "mgmt_subnet_cidr" {
   description = "List out management Subnet CIDR . "
   type        = list(string)
@@ -77,6 +83,11 @@ variable "ftd_inside_ip" {
   description = "List FTD inside IPs . "
   type        = list(string)
   default     = []
+}
+
+variable "ftd_inside_gw" {
+  description = "Inside subnet Gateway"
+  type = list(string)
 }
 
 variable "fmc_ip" {
@@ -234,9 +245,15 @@ variable "spoke_vpc_name" {
 }
 
 variable "spoke_create_igw" {
-  type        = string
+  type        = bool
   description = " Condition to create IGW . "
   default     = true
+}
+
+variable "spoke_igw_name" {
+  description = "name of existing IGW to be used"
+  type        = string
+  default     = ""
 }
 
 variable "spoke_subnet_cidr" {
@@ -334,4 +351,17 @@ variable "create_fmc" {
 variable "lambda_func_name" {
   type    = string
   default = "fmc_config_func"
+}
+
+variable "fmc_username" {
+  type = string
+}
+
+variable "fmc_password" {
+  type = string
+}
+
+variable "create_tgw" {
+  type = bool
+  default = true
 }
