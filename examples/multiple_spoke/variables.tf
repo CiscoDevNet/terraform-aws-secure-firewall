@@ -87,7 +87,7 @@ variable "ftd_inside_ip" {
 
 variable "ftd_inside_gw" {
   description = "Inside subnet Gateway"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "fmc_ip" {
@@ -422,11 +422,11 @@ variable "create_tgw2" {
 }
 
 variable "tgw_subnet_cidr1" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "tgw_subnet_cidr2" {
-  type = list(string)
+  type    = list(string)
   default = []
 }

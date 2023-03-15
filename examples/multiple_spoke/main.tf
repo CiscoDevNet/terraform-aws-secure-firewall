@@ -24,29 +24,29 @@ module "service_network" {
 
 module "spoke_network1" {
   #source           = "CiscoDevNet/secure-firewall/aws//modules/network"
-  source            = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/network"
-  vpc_name          = var.spoke1_vpc_name
-  create_igw        = var.spoke1_create_igw
-  igw_name          = var.spoke1_igw_name
-  create_fmc        = var.create_fmc_spoke1
-  outside_subnet_cidr  = var.spoke1_subnet_cidr
-  outside_subnet_name  = var.spoke1_subnet_name
+  source              = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/network"
+  vpc_name            = var.spoke1_vpc_name
+  create_igw          = var.spoke1_create_igw
+  igw_name            = var.spoke1_igw_name
+  create_fmc          = var.create_fmc_spoke1
+  outside_subnet_cidr = var.spoke1_subnet_cidr
+  outside_subnet_name = var.spoke1_subnet_name
 }
 
 module "spoke_network2" {
   #source           = "CiscoDevNet/secure-firewall/aws//modules/network"
-  source            = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/network"
-  vpc_name          = var.spoke2_vpc_name
-  create_igw        = var.spoke2_create_igw
-  igw_name          = var.spoke2_igw_name
-  create_fmc        = var.create_fmc_spoke2
-  outside_subnet_cidr  = var.spoke2_subnet_cidr
-  outside_subnet_name  = var.spoke2_subnet_name
+  source              = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/network"
+  vpc_name            = var.spoke2_vpc_name
+  create_igw          = var.spoke2_create_igw
+  igw_name            = var.spoke2_igw_name
+  create_fmc          = var.create_fmc_spoke2
+  outside_subnet_cidr = var.spoke2_subnet_cidr
+  outside_subnet_name = var.spoke2_subnet_name
 }
 
 module "instance" {
   #source                  = "CiscoDevNet/secure-firewall/aws//modules/firewall_instance"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/firewall_instance"
+  source                  = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/firewall_instance"
   ftd_version             = var.ftd_version
   create_fmc              = var.create_fmc
   keyname                 = var.keyname
@@ -72,7 +72,7 @@ module "instance" {
 
 module "gwlb" {
   #source      = "CiscoDevNet/secure-firewall/aws//modules/gwlb"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/gwlb"
+  source      = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/gwlb"
   gwlb_name   = var.gwlb_name
   gwlb_subnet = module.service_network.outside_subnet
   gwlb_vpc_id = module.service_network.vpc_id
@@ -81,48 +81,48 @@ module "gwlb" {
 }
 
 module "gwlbe" {
-  source            = "CiscoDevNet/secure-firewall/aws//modules/gwlbe"
+  source = "CiscoDevNet/secure-firewall/aws//modules/gwlbe"
   #source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/gwlbe"
   gwlbe_subnet_cidr = var.gwlbe_subnet_cidr
   gwlbe_subnet_name = var.gwlbe_subnet_name
   vpc_id            = module.service_network.vpc_id
   #igw_id            = module.spoke_network.internet_gateway
-  gwlb              = module.gwlb.gwlb
+  gwlb = module.gwlb.gwlb
 }
 
 module "transitgateway1" {
   #source                      = "CiscoDevNet/secure-firewall/aws//modules/transitgateway"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/transitgateway"
-  create_tgw                  = var.create_tgw1
-  vpc_service_id              = module.service_network.vpc_id
-  vpc_spoke_id                = module.spoke_network1.vpc_id
-  tgw_subnet_cidr             = var.tgw_subnet_cidr1
-  tgw_subnet_name             = var.tgw_subnet_name1
-  vpc_spoke_cidr              = module.spoke_network1.vpc_cidr
-  spoke_subnet_id             = module.spoke_network1.outside_subnet
-  spoke_rt_id                 = module.spoke_network1.outside_rt_id
-  gwlbe                       = module.gwlbe.gwlb_endpoint_id
-  transit_gateway_name        = var.transit_gateway_name
-  availability_zone_count     = var.availability_zone_count
+  source                  = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/transitgateway"
+  create_tgw              = var.create_tgw1
+  vpc_service_id          = module.service_network.vpc_id
+  vpc_spoke_id            = module.spoke_network1.vpc_id
+  tgw_subnet_cidr         = var.tgw_subnet_cidr1
+  tgw_subnet_name         = var.tgw_subnet_name1
+  vpc_spoke_cidr          = module.spoke_network1.vpc_cidr
+  spoke_subnet_id         = module.spoke_network1.outside_subnet
+  spoke_rt_id             = module.spoke_network1.outside_rt_id
+  gwlbe                   = module.gwlbe.gwlb_endpoint_id
+  transit_gateway_name    = var.transit_gateway_name
+  availability_zone_count = var.availability_zone_count
   #nat_subnet_routetable_ids   = module.nat_gw.nat_rt_id
   gwlbe_subnet_routetable_ids = module.gwlbe.gwlbe_rt_id
 }
 
 module "transitgateway2" {
   #source                      = "CiscoDevNet/secure-firewall/aws//modules/transitgateway"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/transitgateway"
-  depends_on                  = [module.transitgateway1]
-  create_tgw                  = var.create_tgw2
-  vpc_service_id              = module.service_network.vpc_id
-  vpc_spoke_id                = module.spoke_network2.vpc_id
-  tgw_subnet_cidr             = var.tgw_subnet_cidr2
-  tgw_subnet_name             = var.tgw_subnet_name1
-  vpc_spoke_cidr              = module.spoke_network2.vpc_cidr
-  spoke_subnet_id             = module.spoke_network2.outside_subnet
-  spoke_rt_id                 = module.spoke_network2.outside_rt_id
-  gwlbe                       = module.gwlbe.gwlb_endpoint_id
-  transit_gateway_name        = var.transit_gateway_name
-  availability_zone_count     = var.availability_zone_count
+  source                  = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/transitgateway"
+  depends_on              = [module.transitgateway1]
+  create_tgw              = var.create_tgw2
+  vpc_service_id          = module.service_network.vpc_id
+  vpc_spoke_id            = module.spoke_network2.vpc_id
+  tgw_subnet_cidr         = var.tgw_subnet_cidr2
+  tgw_subnet_name         = var.tgw_subnet_name1
+  vpc_spoke_cidr          = module.spoke_network2.vpc_cidr
+  spoke_subnet_id         = module.spoke_network2.outside_subnet
+  spoke_rt_id             = module.spoke_network2.outside_rt_id
+  gwlbe                   = module.gwlbe.gwlb_endpoint_id
+  transit_gateway_name    = var.transit_gateway_name
+  availability_zone_count = var.availability_zone_count
   #nat_subnet_routetable_ids   = module.nat_gw.nat_rt_id
   gwlbe_subnet_routetable_ids = module.gwlbe.gwlbe_rt_id
 }

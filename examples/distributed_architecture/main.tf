@@ -24,12 +24,12 @@ module "service_network" {
 
 module "spoke_network" {
   #source              = "CiscoDevNet/secure-firewall/aws//modules/network"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/network"
-  vpc_name             = var.spoke_vpc_name
-  create_igw           = var.spoke_create_igw
-  igw_name             = var.spoke_igw_name
-  create_fmc           = var.create_fmc
-  outside_subnet_name  = var.spoke_subnet_name
+  source              = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/network"
+  vpc_name            = var.spoke_vpc_name
+  create_igw          = var.spoke_create_igw
+  igw_name            = var.spoke_igw_name
+  create_fmc          = var.create_fmc
+  outside_subnet_name = var.spoke_subnet_name
 }
 
 module "instance" {

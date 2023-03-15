@@ -87,7 +87,7 @@ variable "ftd_inside_ip" {
 
 variable "ftd_inside_gw" {
   description = "Inside subnet Gateway"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "fmc_ip" {

@@ -1,17 +1,17 @@
 module "service_network" {
   #source                = "CiscoDevNet/secure-firewall/aws//modules/network"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/network"
-  vpc_name              = var.service_vpc_name
-  create_fmc            = var.create_fmc
-  create_igw            = var.service_create_igw
-  igw_name              = var.service_igw_name
-  mgmt_subnet_cidr      = var.mgmt_subnet_cidr
+  source           = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/network"
+  vpc_name         = var.service_vpc_name
+  create_fmc       = var.create_fmc
+  create_igw       = var.service_create_igw
+  igw_name         = var.service_igw_name
+  mgmt_subnet_cidr = var.mgmt_subnet_cidr
   #ftd_mgmt_ip           = var.ftd_mgmt_ip
-  outside_subnet_cidr   = var.outside_subnet_cidr
+  outside_subnet_cidr = var.outside_subnet_cidr
   #ftd_outside_ip        = var.ftd_outside_ip
-  diag_subnet_cidr      = var.diag_subnet_cidr
+  diag_subnet_cidr = var.diag_subnet_cidr
   #ftd_diag_ip           = var.ftd_diag_ip
-  inside_subnet_cidr    = var.inside_subnet_cidr
+  inside_subnet_cidr = var.inside_subnet_cidr
   #ftd_inside_ip         = var.ftd_inside_ip
   fmc_ip                = var.fmc_ip
   mgmt_subnet_name      = var.mgmt_subnet_name
@@ -28,18 +28,18 @@ module "service_network" {
 
 module "spoke_network" {
   #source              = "CiscoDevNet/secure-firewall/aws//modules/network"
-  source               = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/network"
-  vpc_name             = var.spoke_vpc_name
-  create_igw           = var.spoke_create_igw
-  igw_name             = var.spoke_igw_name
-  create_fmc           = var.create_fmc
-  outside_subnet_cidr  = var.spoke_subnet_cidr
-  outside_subnet_name  = var.spoke_subnet_name
+  source              = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/network"
+  vpc_name            = var.spoke_vpc_name
+  create_igw          = var.spoke_create_igw
+  igw_name            = var.spoke_igw_name
+  create_fmc          = var.create_fmc
+  outside_subnet_cidr = var.spoke_subnet_cidr
+  outside_subnet_name = var.spoke_subnet_name
 }
 
 module "instance" {
   #source                  = "CiscoDevNet/secure-firewall/aws//modules/firewall_instance"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/firewall_instance"
+  source                  = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/firewall_instance"
   ftd_version             = var.ftd_version
   create_fmc              = var.create_fmc
   keyname                 = var.keyname
@@ -55,7 +55,7 @@ module "instance" {
 
 module "nat_gw" {
   #source                  = "CiscoDevNet/secure-firewall/aws//modules/nat_gw"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/nat_gw"
+  source                  = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/nat_gw"
   ngw_subnet_cidr         = var.ngw_subnet_cidr
   ngw_subnet_name         = var.ngw_subnet_name
   availability_zone_count = var.availability_zone_count
@@ -65,7 +65,7 @@ module "nat_gw" {
 
 module "gwlb" {
   #source      = "CiscoDevNet/secure-firewall/aws//modules/gwlb"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/gwlb"
+  source      = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/gwlb"
   gwlb_name   = var.gwlb_name
   gwlb_subnet = module.service_network.outside_subnet
   gwlb_vpc_id = module.service_network.vpc_id
@@ -75,7 +75,7 @@ module "gwlb" {
 
 module "gwlbe" {
   #source            = "CiscoDevNet/secure-firewall/aws//modules/gwlbe"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/gwlbe"
+  source            = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/gwlbe"
   gwlbe_subnet_cidr = var.gwlbe_subnet_cidr
   gwlbe_subnet_name = var.gwlbe_subnet_name
   vpc_id            = module.service_network.vpc_id
@@ -85,7 +85,7 @@ module "gwlbe" {
 
 module "transitgateway" {
   #source                      = "CiscoDevNet/secure-firewall/aws//modules/transitgateway"
-  source                = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/transitgateway"
+  source                      = "/Users/sameersingh/git_repos/terraform-aws-secure-firewall/modules/transitgateway"
   create_tgw                  = var.create_tgw
   vpc_service_id              = module.service_network.vpc_id
   vpc_spoke_id                = module.spoke_network.vpc_id
