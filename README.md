@@ -26,7 +26,7 @@ Using this Terraform template following resources will be created:
 ## Topology
 
 <p align="center">
-  <img src="./images/centralized\_architecture.png" alt="GWLB Centralized Architecture" width="100%">
+  <img src="https://github.com/sameesin/terraform-cisco-secure-firewall/blob/modules/images/centralized_architecture.png" width="100%">
 </p>
 
 ## Prerequisites
