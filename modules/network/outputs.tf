@@ -56,6 +56,11 @@ output "diag_subnet" {
   value       = local.diag_subnet
 }
 
+output "outside_subnet_cidr" {
+  description = "Outside Subnet CIDR"
+  value       = local.outside_subnet.*.cidr_block
+}
+
 output "mgmt_interface_ip" {
   description = "Mgmt Interface IP"
   value       = aws_network_interface.ftd_mgmt.*.private_ip

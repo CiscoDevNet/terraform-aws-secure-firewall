@@ -29,3 +29,13 @@ variable "internet_gateway" {
   type = string
   default = ""
 }
+
+variable "spoke_subnet_cidr" {
+  type = list(string)
+  default = []
+}
+
+variable "gwlb_endpoint_id" {
+  type = list(string)
+  default = []
+}
