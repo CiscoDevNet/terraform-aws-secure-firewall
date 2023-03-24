@@ -22,7 +22,7 @@ variable "create_igw" {
 variable "create_fmc" {
   description = "Boolean value to create FMC or not"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "igw_name" {
