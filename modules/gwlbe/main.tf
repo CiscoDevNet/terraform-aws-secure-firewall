@@ -13,7 +13,8 @@ resource "aws_subnet" "gwlbe_subnet" {
 }
 
 resource "aws_route_table" "gwlbe_route" {
-  count  = length(var.spoke_rt_id) != 0 ? length(var.spoke_rt_id) : 0
+  #count  = length(var.spoke_rt_id) != 0 ? length(var.spoke_rt_id) : 0
+  count             = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : 0
   vpc_id = var.vpc_id
 
   route {
@@ -27,8 +28,8 @@ resource "aws_route_table" "gwlbe_route" {
 }
 
 resource "aws_route_table_association" "gwlbe_association" {
-  count          = length(var.spoke_rt_id) != 0 ? length(var.spoke_rt_id) : 0
   #count          = length(var.spoke_rt_id) != 0 ? length(var.spoke_rt_id) : 0
+  count             = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : 0
   subnet_id      = length(var.gwlbe_subnet_cidr) != 0 ? aws_subnet.gwlbe_subnet[count.index].id : data.aws_subnet.gwlbe[count.index].id
   route_table_id = aws_route_table.gwlbe_route[count.index].id
 }
@@ -49,9 +50,9 @@ resource "aws_vpc_endpoint" "glwbe" {
   }
 }
 
-resource "aws_route" "spoke_route" {
-  count                  = length(var.spoke_rt_id) != 0 ? length(var.spoke_rt_id) : 0
-  route_table_id         = var.spoke_rt_id[count.index]
-  destination_cidr_block = "0.0.0.0/0"
-  vpc_endpoint_id     = aws_vpc_endpoint.glwbe[count.index].id
-}
+# resource "aws_route" "spoke_route" {
+#   count                  = length(var.spoke_rt_id) != 0 ? length(var.spoke_rt_id) : 0
+#   route_table_id         = var.spoke_rt_id[count.index]
+#   destination_cidr_block = "0.0.0.0/0"
+#   vpc_endpoint_id     = aws_vpc_endpoint.glwbe[count.index].id
+# }
