@@ -14,7 +14,7 @@ resource "aws_subnet" "gwlbe_subnet" {
 
 resource "aws_route_table" "gwlbe_route" {
   #count  = length(var.spoke_rt_id) != 0 ? length(var.spoke_rt_id) : 0
-  count             = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : 0
+  count             = length(var.gwlbe_subnet_cidr) != 0 ? (var.inbound ? 0 : length(var.gwlbe_subnet_cidr)) : 0
   vpc_id = var.vpc_id
 
   route {
@@ -29,7 +29,7 @@ resource "aws_route_table" "gwlbe_route" {
 
 resource "aws_route_table_association" "gwlbe_association" {
   #count          = length(var.spoke_rt_id) != 0 ? length(var.spoke_rt_id) : 0
-  count             = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : 0
+  count          = length(var.gwlbe_subnet_cidr) != 0 ? (var.inbound ? 0 : length(var.gwlbe_subnet_cidr)) : 0
   subnet_id      = length(var.gwlbe_subnet_cidr) != 0 ? aws_subnet.gwlbe_subnet[count.index].id : data.aws_subnet.gwlbe[count.index].id
   route_table_id = aws_route_table.gwlbe_route[count.index].id
 }
@@ -39,7 +39,7 @@ resource "aws_vpc_endpoint_service" "glwbes" {
   gateway_load_balancer_arns = [var.gwlb[0]]
 }
 
-resource "aws_vpc_endpoint" "glwbe" {
+resource "aws_vpc_endpoint" "gwlbe" {
   count             = length(var.gwlbe_subnet_cidr)
   service_name      = aws_vpc_endpoint_service.glwbes.service_name
   subnet_ids        = [aws_subnet.gwlbe_subnet[count.index].id]
@@ -50,9 +50,35 @@ resource "aws_vpc_endpoint" "glwbe" {
   }
 }
 
+
+
 # resource "aws_route" "spoke_route" {
 #   count                  = length(var.spoke_rt_id) != 0 ? length(var.spoke_rt_id) : 0
 #   route_table_id         = var.spoke_rt_id[count.index]
 #   destination_cidr_block = "0.0.0.0/0"
 #   vpc_endpoint_id     = aws_vpc_endpoint.glwbe[count.index].id
 # }
+
+resource "aws_route_table" "igw_route" {
+  depends_on = [
+    aws_vpc_endpoint.gwlbe
+  ]
+  count             = var.inbound ? 1 : 0
+  vpc_id = var.vpc_id
+
+  tags = {
+    Name = "INBOUND-RT-${count.index + 1}"
+  }
+}
+
+resource "aws_route" "spoke_igw_route" {
+  count                  = length(var.spoke_subnet) != 0 ? length(var.spoke_subnet) : 0
+  route_table_id         = aws_route_table.igw_route[0].id
+  destination_cidr_block = var.spoke_subnet[count.index]
+  vpc_endpoint_id        = aws_vpc_endpoint.gwlbe[0].id
+}
+
+resource "aws_route_table_association" "igw_rt" {
+  gateway_id     = var.internet_gateway
+  route_table_id = aws_route_table.igw_route[0].id
+}

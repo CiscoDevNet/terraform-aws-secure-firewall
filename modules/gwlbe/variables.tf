@@ -39,3 +39,18 @@ variable "spoke_rt_id" {
   type = list(string)
   default = []
 }
+
+variable "inbound" {
+  type = bool
+  default = false
+}
+
+variable "internet_gateway" {
+  type = string
+  default = ""
+}
+
+variable "spoke_subnet" {
+  type = list(string)
+  default = []
+}

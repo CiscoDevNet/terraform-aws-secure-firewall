@@ -8,5 +8,5 @@ output "gwlbe_rt_id" {
 
 output "gwlb_endpoint_id" {
   description = "gwlb vpc endpoint"
-  value       = aws_vpc_endpoint.glwbe.*.id
+  value       = aws_vpc_endpoint.gwlbe.*.id
 }
