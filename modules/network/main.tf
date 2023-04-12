@@ -361,7 +361,7 @@ resource "aws_route_table_association" "diag_association" {
 # # ##################################################################################################################################
 
 resource "aws_eip" "ftd_mgmt_eip" {
-  count = var.use_ftd_eip ? (length(var.mgmt_interface) != 0 ? length(var.mgmt_interface) : length(var.ftd_mgmt_ip)) : 0
+  count = length(var.mgmt_subnet_name)
   vpc   = true
   tags = merge({
     "Name" = "ftd-${count.index} Management IP"
@@ -370,7 +370,7 @@ resource "aws_eip" "ftd_mgmt_eip" {
 
 resource "aws_eip_association" "ftd_mgmt_ip_assocation" {
   count                = length(aws_eip.ftd_mgmt_eip)
-  network_interface_id = length(var.mgmt_interface) != 0 ? var.mgmt_interface[count.index] : aws_network_interface.ftd_mgmt[count.index].id
+  network_interface_id = aws_network_interface.ftd_mgmt[count.index].id
   allocation_id        = aws_eip.ftd_mgmt_eip[count.index].id
 }
 

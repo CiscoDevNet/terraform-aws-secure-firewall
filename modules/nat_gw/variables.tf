@@ -39,3 +39,13 @@ variable "gwlb_endpoint_id" {
   type = list(string)
   default = []
 }
+
+variable "is_cdfmc" {
+  type = bool
+  default = false
+}
+
+variable "mgmt_rt_id" {
+  type = list(string)
+  default = []
+}

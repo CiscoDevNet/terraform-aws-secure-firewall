@@ -5,5 +5,5 @@
       "ManageLocally":  "No",
       "FmcIp":          "${fmc_ip}",
       "FmcRegKey":      "cisco",
-      "FmcNatId":       "${fmc_nat_id}",
+      "FmcNatId":       "cisco",
 }

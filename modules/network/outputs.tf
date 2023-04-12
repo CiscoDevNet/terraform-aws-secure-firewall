@@ -95,3 +95,12 @@ output "outside_rt_id" {
   description = "Outside subnet Route table ID"
   value       = aws_route_table.ftd_outside_route.*.id
 }
+
+output "mgmt_rt_id" {
+  description = "Mgmt subnet Route table ID"
+  value       = aws_route_table.ftd_mgmt_route.*.id
+}
+
+output "aws_ftd_eip" {
+  value = aws_eip.ftd_mgmt_eip.*.public_ip
+}
