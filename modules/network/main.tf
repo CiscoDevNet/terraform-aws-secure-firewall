@@ -295,8 +295,9 @@ resource "aws_internet_gateway" "int_gw" {
   }, var.tags)
 }
 
+#mgmt subnet is getting created so create_igw condition should not be there
 resource "aws_route_table" "ftd_mgmt_route" {
-  count  = var.create_igw ? length(local.mgmt_subnet) : (var.igw_name != "" ? length(local.mgmt_subnet) : 0)
+  count  = length(local.mgmt_subnet)
   vpc_id = local.con
   route {
     cidr_block = "0.0.0.0/0"
@@ -333,7 +334,7 @@ resource "aws_route_table" "ftd_diag_route" {
 }
 
 resource "aws_route_table_association" "outside_association" {
-  count          = length(local.outside_subnet)
+  count          = var.rta ? length(local.outside_subnet) : 0
   subnet_id      = local.outside_subnet[count.index].id
   route_table_id = aws_route_table.ftd_outside_route[count.index].id
 }
@@ -361,7 +362,7 @@ resource "aws_route_table_association" "diag_association" {
 # # ##################################################################################################################################
 
 resource "aws_eip" "ftd_mgmt_eip" {
-  count = length(var.mgmt_subnet_name)
+  count = var.use_ftd_eip ? length(var.mgmt_subnet_name) : 0
   vpc   = true
   tags = merge({
     "Name" = "ftd-${count.index} Management IP"

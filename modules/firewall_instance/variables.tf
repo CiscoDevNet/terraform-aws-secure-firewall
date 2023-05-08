@@ -14,7 +14,7 @@ variable "ftd_version" {
 variable "create_fmc" {
   description = "Boolean value to create FMC or not"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "fmc_version" {
@@ -55,7 +55,7 @@ variable "fmc_mgmt_ip" {
 variable "fmc_nat_id" {
   description = "specified fmc nat id . "
   type        = string
-  default     = ""
+  default     = "cisco"
 }
 variable "ftd_mgmt_interface" {
   description = "list out existing ENI IDs to be used for ftd management interface"

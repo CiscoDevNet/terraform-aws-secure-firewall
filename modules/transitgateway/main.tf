@@ -12,7 +12,7 @@ resource "aws_subnet" "tgw_subnet" {
 }
 
 resource "aws_route_table" "tgw_route" {
-  count  = var.availability_zone_count
+  count  = length(var.tgw_subnet_cidr) != 0 ? var.availability_zone_count : 0
   vpc_id = var.vpc_service_id
 
   route {
@@ -50,6 +50,7 @@ resource "aws_ec2_transit_gateway" "tgw" {
 ###########################################################################################################################
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "tgw_att_service_vpc" {
+  count                                           = var.create_tgw ? 1 : 0
   subnet_ids                                      = local.tgw_subnet
   transit_gateway_id                              = local.tgw
   vpc_id                                          = var.vpc_service_id
@@ -68,7 +69,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "tgw_att_spoke_vpc" {
   transit_gateway_default_route_table_association = false
   transit_gateway_default_route_table_propagation = false
   tags = {
-    Name = "tgw-att-spoke-vpc"
+    Name = "tgw-att-spoke-vpc-${var.spoke_subnet_id[0]}"
   }
 }
 
@@ -77,7 +78,11 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "tgw_att_spoke_vpc" {
 ###########################################################################################################################
 
 resource "aws_ec2_transit_gateway_route_table" "rt_service_vpc_attach" {
+  count              = var.create_tgw ? 1 : 0
   transit_gateway_id = local.tgw
+  tags = {
+    Name = "service vpc attachment RT"
+  }
 }
 
 resource "aws_ec2_transit_gateway_route_table" "rt_spoke_vpc_attach" {
@@ -85,8 +90,9 @@ resource "aws_ec2_transit_gateway_route_table" "rt_spoke_vpc_attach" {
 }
 
 resource "aws_ec2_transit_gateway_route_table_association" "tg_rt_assoc_service_vpc" {
-  transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.tgw_att_service_vpc.id
-  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.rt_service_vpc_attach.id
+  count                          = var.create_tgw ? 1 : 0
+  transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.tgw_att_service_vpc[0].id
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.rt_service_vpc_attach[0].id
 }
 
 resource "aws_ec2_transit_gateway_route_table_association" "tg_rt_assoc_spoke_vpc" {
@@ -97,12 +103,12 @@ resource "aws_ec2_transit_gateway_route_table_association" "tg_rt_assoc_spoke_vp
 resource "aws_ec2_transit_gateway_route" "default_rout_to_service_vpc" {
   destination_cidr_block         = var.vpc_spoke_cidr
   transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.tgw_att_spoke_vpc.id
-  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.rt_service_vpc_attach.id
+  transit_gateway_route_table_id = local.tgw_svc_rt
 }
 
 resource "aws_ec2_transit_gateway_route" "default_rout_to_spoke_vpc" {
   destination_cidr_block         = "0.0.0.0/0"
-  transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.tgw_att_service_vpc.id
+  transit_gateway_attachment_id  = local.tgw_att_svc
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.rt_spoke_vpc_attach.id
 }
 

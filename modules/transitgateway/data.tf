@@ -23,3 +23,19 @@ data "aws_ec2_transit_gateway" "tgw" {
     values = [var.transit_gateway_name]
   }
 }
+
+data "aws_ec2_transit_gateway_vpc_attachment" "tgw_att_service_vpc" {
+  count = var.create_tgw ? 0 : 1
+  filter {
+    name = "tag:Name"
+    values = ["tgw-att-service-vpc"]
+  }
+}
+
+data "aws_ec2_transit_gateway_route_table" "rt_service_vpc_attach" {
+  count = var.create_tgw ? 0 : 1
+  filter {
+    name = "tag:Name"
+    values = ["service vpc attachment RT"]
+  }
+}

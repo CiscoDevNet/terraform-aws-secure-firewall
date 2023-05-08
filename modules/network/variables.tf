@@ -241,3 +241,8 @@ variable "use_fmc_eip" {
   type        = bool
   default     = false
 }
+
+variable "rta" {
+  type = bool
+  default = true
+}
