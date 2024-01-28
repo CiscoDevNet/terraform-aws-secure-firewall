@@ -263,24 +263,24 @@ resource "aws_network_interface" "ftd_diag" {
 }
 
 #DHCP
-resource "aws_network_interface" "fmcmgmt" {
-  count             = var.create_fmc ? (length(var.fmc_interface) != 0 ? 0 : var.fmc_ip == "" ? 0 : 1) : 0
-  description       = "Fmc_Management"
-  subnet_id         = local.mgmt_subnet[local.azs[0] - 1].id
-  source_dest_check = false
-  #private_ips       = [var.fmc_ip]
-  security_groups   = [aws_security_group.fmc_mgmt_sg[0].id]
-}
-
-#Static FMC IP
 # resource "aws_network_interface" "fmcmgmt" {
-#   count             = var.create_fmc ? (length(var.fmc_interface) != 0 ? 0 : 1) : 0
+#   count             = var.create_fmc ? (length(var.fmc_interface) != 0 ? 0 : var.fmc_ip == "" ? 0 : 1) : 0
 #   description       = "Fmc_Management"
 #   subnet_id         = local.mgmt_subnet[local.azs[0] - 1].id
 #   source_dest_check = false
-#   private_ips       = [var.fmc_ip]
+#   #private_ips       = [var.fmc_ip]
 #   security_groups   = [aws_security_group.fmc_mgmt_sg[0].id]
 # }
+
+#Static FMC IP
+resource "aws_network_interface" "fmcmgmt" {
+  count             = var.create_fmc ? (length(var.fmc_interface) != 0 ? 0 : 1) : 0
+  description       = "Fmc_Management"
+  subnet_id         = local.mgmt_subnet[local.azs[0] - 1].id
+  source_dest_check = false
+  private_ips       = [var.fmc_ip]
+  security_groups   = [aws_security_group.fmc_mgmt_sg[0].id]
+}
 
 # # ##################################################################################################################################
 # # #Internet Gateway and Routing Tables
