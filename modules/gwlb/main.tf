@@ -14,7 +14,7 @@ resource "aws_lb" "gwlb" {
 }
 
 resource "aws_lb_target_group" "gwlb_tg" {
-  name        = "gwlb-tg"
+  name        = var.gwlb_tg_name
   port        = 6081
   protocol    = "GENEVE"
   target_type = "ip"

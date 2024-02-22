@@ -22,4 +22,9 @@ variable "gwlb_vpc_id" {
   description = "GWLB vpc id"
 }
 
+variable "gwlb_tg_name" {
+  type = string
+  description = "name of the GWLB Target group"
+  default = "gwlb-tg"
+}
 
