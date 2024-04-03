@@ -9,6 +9,10 @@ data "aws_subnet" "mgmt" {
     name   = "tag:Name"
     values = [var.mgmt_subnet_name[count.index]]
   }
+  filter {
+    name = "vpc-id"
+    values = [data.aws_vpc.ftd_vpc.id]
+  }
 }
 
 data "aws_subnet" "outsideftd" {
@@ -16,6 +20,10 @@ data "aws_subnet" "outsideftd" {
   filter {
     name   = "tag:Name"
     values = [var.outside_subnet_name[count.index]]
+  }
+  filter {
+    name = "vpc-id"
+    values = [data.aws_vpc.ftd_vpc.id]
   }
 }
 
@@ -25,6 +33,10 @@ data "aws_subnet" "insideftd" {
     name   = "tag:Name"
     values = [var.inside_subnet_name[count.index]]
   }
+  filter {
+    name = "vpc-id"
+    values = [data.aws_vpc.ftd_vpc.id]
+  }
 }
 
 data "aws_subnet" "diagftd" {
@@ -32,6 +44,10 @@ data "aws_subnet" "diagftd" {
   filter {
     name   = "tag:Name"
     values = [var.diag_subnet_name[count.index]]
+  }
+  filter {
+    name = "vpc-id"
+    values = [data.aws_vpc.ftd_vpc.id]
   }
 }
 
