@@ -11,7 +11,7 @@ data "aws_subnet" "mgmt" {
   }
   filter {
     name = "vpc-id"
-    values = [data.aws_vpc.ftd_vpc.id]
+    values = [data.aws_vpc.ftd_vpc[0].id]
   }
 }
 
@@ -23,7 +23,7 @@ data "aws_subnet" "outsideftd" {
   }
   filter {
     name = "vpc-id"
-    values = [data.aws_vpc.ftd_vpc.id]
+    values = [data.aws_vpc.ftd_vpc[0].id]
   }
 }
 
@@ -35,7 +35,7 @@ data "aws_subnet" "insideftd" {
   }
   filter {
     name = "vpc-id"
-    values = [data.aws_vpc.ftd_vpc.id]
+    values = [data.aws_vpc.ftd_vpc[0].id]
   }
 }
 
@@ -47,7 +47,7 @@ data "aws_subnet" "diagftd" {
   }
   filter {
     name = "vpc-id"
-    values = [data.aws_vpc.ftd_vpc.id]
+    values = [data.aws_vpc.ftd_vpc[0].id]
   }
 }
 
