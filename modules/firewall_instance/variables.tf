@@ -108,3 +108,9 @@ variable "reg_key" {
   default     = "cisco"
 }
 
+variable "block_encrypt" {
+  description = "boolean value to encrypt block or not
+  default = false
+  type = bool
+}
+
