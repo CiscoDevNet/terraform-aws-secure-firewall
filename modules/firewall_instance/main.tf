@@ -4,6 +4,9 @@
 # # # Create the Cisco FMC and FTD Instances
 # # ##################################################################################################################################
 
+#Ignoring IMDSv2 check temporarily as it is not currently supported on the available Cisco FTDv marketplace version.
+#The support will be available soon on the marketplace version
+#tfsec:ignore:aws-ec2-enforce-http-token-imds
 resource "aws_instance" "ftdv" {
   count         = var.instances_per_az * var.availability_zone_count
   ami           = data.aws_ami.ftdv.id
