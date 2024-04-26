@@ -109,7 +109,7 @@ variable "reg_key" {
 }
 
 variable "block_encrypt" {
-  description = "boolean value to encrypt block or not
+  description = "boolean value to encrypt block or not"
   default = false
   type = bool
 }
