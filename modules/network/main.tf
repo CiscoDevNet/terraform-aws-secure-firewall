@@ -18,7 +18,7 @@ resource "aws_subnet" "mgmt_subnet" {
   vpc_id                  = local.con
   cidr_block              = var.mgmt_subnet_cidr[count.index]
   availability_zone       = data.aws_availability_zones.available.names[count.index]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
   tags = merge({
     Name = "${var.mgmt_subnet_name[count.index]}"
   }, var.tags)
