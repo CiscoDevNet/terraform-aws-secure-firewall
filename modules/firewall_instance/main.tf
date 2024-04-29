@@ -14,15 +14,16 @@ resource "aws_instance" "ftdv" {
   key_name      = var.keyname
   
   root_block_device {
-      encrypted = var.block_encrypt
+      #encrypted = var.block_encrypt
+      encrypted = true
   }
-    
   ebs_block_device {
     device_name = "/dev/xvda"
     volume_size = 52
     volume_type = "gp2"
     delete_on_termination = true
-    encrypted = var.block_encrypt
+    #encrypted = var.block_encrypt
+    encrypted = true
   }
 
   network_interface {
