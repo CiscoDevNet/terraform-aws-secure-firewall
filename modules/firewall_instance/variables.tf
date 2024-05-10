@@ -92,12 +92,14 @@ variable "fmc_admin_password" {
   description = "specified fmc admin password ."
   type        = string
   sensitive   = true
+  default     = ""
 }
 
 variable "ftd_admin_password" {
   description = "specified ftd admin password ."
   type        = string
   sensitive   = true
+  default     = ""
 }
 
 variable "fmc_hostname" {
