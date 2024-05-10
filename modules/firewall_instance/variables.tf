@@ -55,7 +55,6 @@ variable "fmc_mgmt_ip" {
 variable "fmc_nat_id" {
   description = "specified fmc nat id . "
   type        = string
-  default     = "cisco"
 }
 variable "ftd_mgmt_interface" {
   description = "list out existing ENI IDs to be used for ftd management interface"
@@ -92,7 +91,12 @@ variable "tags" {
 variable "fmc_admin_password" {
   description = "specified fmc admin password ."
   type        = string
-  default     = "Cisco@123"
+  sensitive   = true
+}
+
+variable "ftd_admin_password" {
+  description = "specified ftd admin password ."
+  type        = string
   sensitive   = true
 }
 
@@ -105,7 +109,6 @@ variable "fmc_hostname" {
 variable "reg_key" {
   description = "specified reg key ."
   type        = string
-  default     = "cisco"
 }
 
 variable "block_encrypt" {

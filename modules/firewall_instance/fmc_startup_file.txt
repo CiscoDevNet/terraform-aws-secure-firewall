@@ -1,5 +1,5 @@
 #FMC
 {
-"AdminPassword": "Cisco@123",
+"AdminPassword": "${fmc_admin_password}",
 "Hostname":      "admin",
 }
