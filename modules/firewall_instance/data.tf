@@ -2,12 +2,13 @@
 # All rights reserved.
 
 data "aws_ami" "ftdv" {
-  #most_recent = true
+  most_recent = true
   owners = ["aws-marketplace"]
 
   filter {
     name   = "name"
-    values = ["${var.ftd_version}*"]
+    #values = ["${var.ftd_version}*"]
+    values = ["ftdv-*"]
   }
 
   filter {
@@ -32,12 +33,13 @@ data "template_file" "ftd_startup_file" {
 }
 
 data "aws_ami" "fmcv" {
-  #most_recent = true
+  most_recent = true
   count  = var.create_fmc ? 1 : 0
   owners = ["aws-marketplace"]
   filter {
     name   = "name"
-    values = ["${var.fmc_version}*"]
+    #values = ["${var.fmc_version}*"]
+    values = ["fmcv-*"]
   }
   filter {
     name   = "product-code"

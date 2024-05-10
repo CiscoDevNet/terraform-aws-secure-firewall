@@ -167,13 +167,7 @@ variable "outside_interface_sg" {
     cidr_blocks = list(string)
     description = string
   }))
-  default = [{
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Outside Interface SG"
-  }]
+  default = []
 }
 
 variable "inside_interface_sg" {
@@ -185,13 +179,7 @@ variable "inside_interface_sg" {
     cidr_blocks = list(string)
     description = string
   }))
-  default = [{
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Inside Interface SG"
-  }]
+  default = []
 }
 
 variable "mgmt_interface_sg" {
@@ -203,13 +191,7 @@ variable "mgmt_interface_sg" {
     cidr_blocks = list(string)
     description = string
   }))
-  default = [{
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Mgmt Interface SG"
-  }]
+  default = []
 }
 
 variable "fmc_mgmt_interface_sg" {
@@ -221,13 +203,7 @@ variable "fmc_mgmt_interface_sg" {
     cidr_blocks = list(string)
     description = string
   }))
-  default = [{
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "FMC Mgmt Interface SG"
-  }]
+  default = []
 }
 
 variable "use_ftd_eip" {
@@ -243,6 +219,7 @@ variable "use_fmc_eip" {
 }
 
 variable "rta" {
+  description = "Route table association for the outside subnet"
   type = bool
   default = true
 }
