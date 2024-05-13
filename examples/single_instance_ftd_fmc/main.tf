@@ -36,4 +36,6 @@ module "instance" {
   ftd_outside_interface   = module.service_network.outside_interface
   ftd_diag_interface      = module.service_network.diag_interface
   fmcmgmt_interface       = module.service_network.fmcmgmt_interface
+  reg_key                 = var.reg_key
+  fmc_nat_id              = var.fmc_nat_id 
 }

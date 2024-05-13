@@ -13,15 +13,8 @@ resource "aws_subnet" "gwlbe_subnet" {
 }
 
 resource "aws_route_table" "gwlbe_route" {
-  #count  = length(var.spoke_rt_id) != 0 ? length(var.spoke_rt_id) : 0
   count             = length(var.gwlbe_subnet_cidr) != 0 ? length(var.gwlbe_subnet_cidr) : 0
   vpc_id = var.vpc_id
-
-  # route {
-  #   cidr_block = "0.0.0.0/0"
-  #   gateway_id = var.ngw_id[count.index]
-  # }
-
   tags = {
     Name = "GWLB-RT-${count.index + 1}"
   }

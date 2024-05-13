@@ -295,9 +295,8 @@ resource "aws_internet_gateway" "int_gw" {
   }, var.tags)
 }
 
-#mgmt subnet is getting created so create_igw condition should not be there
 resource "aws_route_table" "ftd_mgmt_route" {
-  count  = length(local.mgmt_subnet)
+  count  = var.create_igw ? length(local.mgmt_subnet) : 0
   vpc_id = local.con
   route {
     cidr_block = "0.0.0.0/0"

@@ -219,3 +219,14 @@ variable "use_fmc_eip" {
   type        = bool
   default     = true
 }
+
+variable "reg_key" {
+  type = string
+  description = "FTD registration key"
+}
+
+variable "fmc_nat_id" {
+  type        = string
+  description = "FMC Registration NAT ID"
+  default     = "cisco"
+}

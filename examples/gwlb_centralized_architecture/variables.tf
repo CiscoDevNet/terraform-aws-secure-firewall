@@ -335,3 +335,28 @@ variable "lambda_func_name" {
     type = string
     default = "fmc_config_func"
 }
+
+variable "reg_key" {
+  type = string
+  description = "FTD registration key"
+}
+
+variable "fmc_nat_id" {
+  type        = string
+  description = "FMC Registration NAT ID"
+  default     = "cisco"
+}
+
+variable "fmc_admin_password" {
+  description = "specified fmc admin password ."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "ftd_admin_password" {
+  description = "specified ftd admin password ."
+  type        = string
+  sensitive   = true
+  default     = ""
+}

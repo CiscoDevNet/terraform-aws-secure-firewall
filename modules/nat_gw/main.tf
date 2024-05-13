@@ -31,7 +31,7 @@ resource "aws_route_table_association" "ngw_association" {
 }
 
 resource "aws_route" "vpce_route" {
-  count                  = length(var.spoke_subnet_cidr) != 0 ? 1 : 0
+  count                  = length(var.spoke_subnet_cidr) != 0 ? length(var.spoke_subnet_cidr) : 0
   route_table_id         = aws_route_table.ngw_route[count.index].id
   destination_cidr_block = var.spoke_subnet_cidr[count.index]
   vpc_endpoint_id        = var.gwlb_endpoint_id[count.index]

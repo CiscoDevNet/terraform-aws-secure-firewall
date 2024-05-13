@@ -31,7 +31,7 @@ No modules
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_ftd_version"></a> [ftd\_version](#input\_ftd\_version_) | specified FTD version | `string` | ftdv-7.1.0 | no |
+| <a name="input_ftd_version"></a> [ftd\_version](#input\_ftd\_version_) | specified FTD version | `string` | ftdv-7.2.7 | no |
 | <a name="input_create_fmc"></a> [create\_fmc](#input\_create\_fmc) | Boolean value to create FMC or not | `bool` | true | no |
 | <a name="input_fmc_version"></a> [fmc_\_version](#input\_fmc\_version) | specified FMC version | `string` | n/a | yes |
 | <a name="input_keyname"></a> [keyname](#input\_keyname) | specified key pair name to connect firewall | `string` | n/a | yes |

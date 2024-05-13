@@ -37,6 +37,7 @@ variable "gwlb" {
 
 variable "spoke_rt_id" {
   type = list(string)
+  description = "Route table ID of spoke subnet for distributed architecture"
   default = []
 }
 

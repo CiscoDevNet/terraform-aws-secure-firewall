@@ -7,8 +7,7 @@ data "aws_ami" "ftdv" {
 
   filter {
     name   = "name"
-    #values = ["${var.ftd_version}*"]
-    values = ["ftdv-*"]
+    values = ["${var.ftd_version}*"]
   }
 
   filter {
@@ -39,8 +38,7 @@ data "aws_ami" "fmcv" {
   owners = ["aws-marketplace"]
   filter {
     name   = "name"
-    #values = ["${var.fmc_version}*"]
-    values = ["fmcv-*"]
+    values = ["${var.fmc_version}*"]
   }
   filter {
     name   = "product-code"
