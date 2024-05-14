@@ -1,6 +1,8 @@
 # Copyright (c) 2022 Cisco Systems, Inc. and its affiliates
 # All rights reserved.
 
+#tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
+# Users can enable VPC flow logs in their VPC as per their environment with the approprite destination for the logs
 resource "aws_vpc" "ftd_vpc" {
   count                = var.vpc_cidr != "" ? 1 : 0
   cidr_block           = var.vpc_cidr
