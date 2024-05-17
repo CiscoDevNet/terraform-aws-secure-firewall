@@ -6,6 +6,7 @@ data "aws_availability_zones" "available" {}
 data "aws_subnet" "dngw_subnet" {
   depends_on = [aws_subnet.ngw_subnet]
   count      = length(var.ngw_subnet_cidr) != 0 ? length(var.ngw_subnet_cidr) : 0
+  vpc_id     = var.vpc_id
   filter {
     name   = "tag:Name"
     values = [var.ngw_subnet_name[count.index]]
